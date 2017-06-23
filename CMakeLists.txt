@@ -76,7 +76,9 @@ if (Pangolin_FOUND)
 else ()
 	message("--- could not find PANGOLIN, not compiling dso_pangolin library.")
 	message("    this means there will be no 3D display / GUI available for dso_dataset.")
-	set(dso_pangolin_SOURCE_FILES )
+	set(dso_nogui_SOURCE_FILES 
+	  ${PROJECT_SOURCE_DIR}/src/IOWrapper/nogui/KeyFrameDisplay.cpp
+	  ${PROJECT_SOURCE_DIR}/src/IOWrapper/nogui/PangolinDSOViewer.cpp)
 	set(HAS_PANGOLIN 0)
 endif ()
 
@@ -123,4 +125,6 @@ if (OpenCV_FOUND AND Pangolin_FOUND)
 else()
 	message("--- not building dso_dataset, since either don't have openCV or Pangolin.")
 endif()
+add_executable(dso_nogui ${PROJECT_SOURCE_DIR}/src/main_dso_nogui.cpp ${dso_nogui_SOURCE_FILES})
+target_link_libraries(dso_nogui dso boost_system boost_thread cxsparse ${LIBZIP_LIBRARY} ${OpenCV_LIBS} ${nogui_LIBRARIES})
 
