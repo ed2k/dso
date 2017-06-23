@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -242,7 +242,8 @@ bool KeyFrameDisplay::refreshPC(bool canRefresh, float scaledTH, float absTH, in
 			tmpVertexBuffer[vertexBufferNumPoints][0] = ((originalInputSparse[i].u+dx)*fxi + cxi) * depth;
 			tmpVertexBuffer[vertexBufferNumPoints][1] = ((originalInputSparse[i].v+dy)*fyi + cyi) * depth;
 			tmpVertexBuffer[vertexBufferNumPoints][2] = depth*(1 + 2*fxi * (rand()/(float)RAND_MAX-0.5f));
-
+            //for(int i=0;i<3;i++)printf("%f ", tmpVertexBuffer[vertexBufferNumPoints][i]);
+            //printf("\n");
 
 
 			if(my_displayMode==0)

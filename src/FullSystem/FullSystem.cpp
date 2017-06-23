@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -30,7 +30,7 @@
  */
 
 #include "FullSystem/FullSystem.h"
- 
+
 #include "stdio.h"
 #include "util/globalFuncs.h"
 #include <Eigen/LU>
@@ -257,7 +257,7 @@ void FullSystem::printResult(std::string file)
 
 		if(setting_onlyLogKFPoses && s->marginalizedAt == s->id) continue;
 
-		myfile << s->timestamp <<
+		myfile << s->incoming_id << " " << s->timestamp <<
 			" " << s->camToWorld.translation().transpose()<<
 			" " << s->camToWorld.so3().unit_quaternion().x()<<
 			" " << s->camToWorld.so3().unit_quaternion().y()<<
