@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -53,7 +53,7 @@ public:
 	int statistics_goodResOnThis;
 	int marginalizedAt;
 	double movedByOpt;
-
+    void * keyFrameDisplay;
 
 	inline FrameShell()
 	{

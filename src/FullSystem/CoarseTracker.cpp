@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -797,7 +797,7 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt, std::ve
 				if(bp[0] > 0 || nid >= 3)
 				{
 					float id = ((sid / nid)-minID) / ((maxID-minID));
-					mf.setPixelCirc(x,y,makeJet3B(id));
+					mf.setPixel1(x,y,makeJet3B(id));
 					//mf.at(idx) = makeJet3B(id);
 				}
 			}

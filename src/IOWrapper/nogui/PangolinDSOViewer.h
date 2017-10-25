@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -63,7 +63,7 @@ public:
 
 	void addImageToDisplay(std::string name, MinimalImageB3* image);
 	void clearAllImagesToDisplay();
-
+    void printPC();
 
 	// ==================== Output3DWrapper Functionality ======================
     virtual void publishGraph(const std::map<uint64_t,Eigen::Vector2i> &connectivity);

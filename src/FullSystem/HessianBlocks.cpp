@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -22,7 +22,7 @@
 */
 
 
- 
+
 #include "FullSystem/HessianBlocks.h"
 #include "util/FrameShell.h"
 #include "FullSystem/ImmaturePoint.h"
@@ -124,7 +124,9 @@ void FrameHessian::release()
 	immaturePoints.clear();
 }
 
-
+/*
+ * set dI, dIp, absSquaredGrad for all levels
+ */
 void FrameHessian::makeImages(float* color, CalibHessian* HCalib)
 {
 

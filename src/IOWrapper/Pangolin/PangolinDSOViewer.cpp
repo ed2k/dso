@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -90,7 +90,7 @@ void PangolinDSOViewer::run()
 
 	// 3D visualization
 	pangolin::OpenGlRenderState Visualization3D_camera(
-		pangolin::ProjectionMatrix(w,h,400,400,w/2,h/2,0.1,1000),
+		pangolin::ProjectionMatrix(w,h,200,200,w/2,h/2,0.1,1000),
 		pangolin::ModelViewLookAt(-0,-5,-10, 0,0,0, pangolin::AxisNegY)
 		);
 
@@ -107,7 +107,7 @@ void PangolinDSOViewer::run()
 	    .SetAspect(w/(float)h);
 
 	pangolin::View& d_residual = pangolin::Display("imgResidual")
-	    .SetAspect(w/(float)h);
+	    .SetBounds(2/3.0f, 1.0f,2/3.0f,1.0f, w/(float)h);
 
 	pangolin::GlTexture texKFDepth(w,h,GL_RGB,false,0,GL_RGB,GL_UNSIGNED_BYTE);
 	pangolin::GlTexture texVideo(w,h,GL_RGB,false,0,GL_RGB,GL_UNSIGNED_BYTE);
@@ -118,8 +118,7 @@ void PangolinDSOViewer::run()
 		  .SetBounds(0.0, 0.3, pangolin::Attach::Pix(UI_WIDTH), 1.0)
 		  .SetLayout(pangolin::LayoutEqual)
 		  .AddDisplay(d_kfDepth)
-		  .AddDisplay(d_video)
-		  .AddDisplay(d_residual);
+		  .AddDisplay(d_video);
 
 	// parameter reconfigure gui
 	pangolin::CreatePanel("ui").SetBounds(0.0, 1.0, 0.0, pangolin::Attach::Pix(UI_WIDTH));
@@ -196,7 +195,8 @@ void PangolinDSOViewer::run()
 		openImagesMutex.lock();
 		if(videoImgChanged) 	texVideo.Upload(internalVideoImg->data,GL_BGR,GL_UNSIGNED_BYTE);
 		if(kfImgChanged) 		texKFDepth.Upload(internalKFImg->data,GL_BGR,GL_UNSIGNED_BYTE);
-		if(resImgChanged) 		texResidual.Upload(internalResImg->data,GL_BGR,GL_UNSIGNED_BYTE);
+		if(kfImgChanged) 		texResidual.Upload(internalKFImg->data,GL_BGR,GL_UNSIGNED_BYTE);
+		//if(resImgChanged) 		texResidual.Upload(internalResImg->data,GL_BGR,GL_UNSIGNED_BYTE);
 		videoImgChanged=kfImgChanged=resImgChanged=false;
 		openImagesMutex.unlock();
 
@@ -220,13 +220,6 @@ void PangolinDSOViewer::run()
 		}
 
 
-		if(setting_render_displayVideo)
-		{
-			d_video.Activate();
-			glColor4f(1.0f,1.0f,1.0f,1.0f);
-			texVideo.RenderToViewportFlipY();
-		}
-
 		if(setting_render_displayDepth)
 		{
 			d_kfDepth.Activate();
@@ -239,6 +232,13 @@ void PangolinDSOViewer::run()
 			d_residual.Activate();
 			glColor4f(1.0f,1.0f,1.0f,1.0f);
 			texResidual.RenderToViewportFlipY();
+		}
+
+		if(setting_render_displayVideo)
+		{
+			d_video.Activate();
+			glColor4f(1.0f,1.0f,1.0f,1.0f);
+			texVideo.RenderToViewportFlipY();
 		}
 
 

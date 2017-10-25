@@ -241,7 +241,7 @@ void FullSystem::setGammaFunction(float* BInv)
 }
 
 
-
+// TODO get point 3d output
 void FullSystem::printResult(std::string file)
 {
 	boost::unique_lock<boost::mutex> lock(trackMutex);
@@ -257,12 +257,13 @@ void FullSystem::printResult(std::string file)
 
 		if(setting_onlyLogKFPoses && s->marginalizedAt == s->id) continue;
 
-		myfile << s->incoming_id << " " << s->timestamp <<
+		myfile << "cam " << s->incoming_id << " " << s->timestamp <<
 			" " << s->camToWorld.translation().transpose()<<
 			" " << s->camToWorld.so3().unit_quaternion().x()<<
 			" " << s->camToWorld.so3().unit_quaternion().y()<<
 			" " << s->camToWorld.so3().unit_quaternion().z()<<
 			" " << s->camToWorld.so3().unit_quaternion().w() << "\n";
+        myfile << s->camToWorld.matrix().cast<float>() << "\n";
 	}
 	myfile.close();
 }
@@ -1065,8 +1066,6 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 
 	setPrecalcValues();
 
-
-
 	// =========================== add new residuals for old points =========================
 	int numFwdResAdde=0;
 	for(FrameHessian* fh1 : frameHessians)		// go through all active frames
@@ -1085,23 +1084,14 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 	}
 
 
-
-
 	// =========================== Activate Points (& flag for marginalization). =========================
 	activatePointsMT();
 	ef->makeIDX();
 
 
-
-
 	// =========================== OPTIMIZE ALL =========================
-
 	fh->frameEnergyTH = frameHessians.back()->frameEnergyTH;
 	float rmse = optimize(setting_maxOptIterations);
-
-
-
-
 
 	// =========================== Figure Out if INITIALIZATION FAILED =========================
 	if(allKeyFramesHistory.size() <= 4)
@@ -1123,37 +1113,21 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 		}
 	}
 
-
-
     if(isLost) return;
-
-
-
 
 	// =========================== REMOVE OUTLIER =========================
 	removeOutliers();
-
-
-
 
 	{
 		boost::unique_lock<boost::mutex> crlock(coarseTrackerSwapMutex);
 		coarseTracker_forNewKF->makeK(&Hcalib);
 		coarseTracker_forNewKF->setCoarseTrackingRef(frameHessians);
 
-
-
         coarseTracker_forNewKF->debugPlotIDepthMap(&minIdJetVisTracker, &maxIdJetVisTracker, outputWrapper);
         coarseTracker_forNewKF->debugPlotIDepthMapFloat(outputWrapper);
 	}
 
-
 	debugPlot("post Optimize");
-
-
-
-
-
 
 	// =========================== (Activate-)Marginalize Points =========================
 	flagPointsForRemoval();
@@ -1165,14 +1139,8 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 			ef->lastNullspaces_affB);
 	ef->marginalizePointsF();
 
-
-
 	// =========================== add new Immature points & new residuals =========================
 	makeNewTraces(fh, 0);
-
-
-
-
 
     for(IOWrap::Output3DWrapper* ow : outputWrapper)
     {

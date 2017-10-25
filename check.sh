@@ -1,1 +1,3 @@
-./build/bin/dso_nogui  files=sequence_11/images.zip calib=sequence_11/camera.txt gamma=sequence_11/pcalib.txt vignette=sequence_11/vignette.png preset=0 mode=0 nogui=1
+D='test'
+[[ $# -eq 1 ]] && D=$1
+./build/bin/dso_nogui  files=$D/images.zip calib=$D/camera.txt gamma=$D/pcalib.txt vignette=$D/vignette.png preset=0 mode=0 nogui=1 quiet=0

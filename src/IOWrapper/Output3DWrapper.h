@@ -104,12 +104,6 @@ namespace IOWrap
  *      ->host: pointer to host-frame of point.
  */
 
-
-
-
-
-
-
 class Output3DWrapper
 {
 public:
@@ -129,10 +123,6 @@ public:
          */
         virtual void publishGraph(const std::map<uint64_t,Eigen::Vector2i, std::less<uint64_t>, Eigen::aligned_allocator<std::pair<uint64_t, Eigen::Vector2i> > > &connectivity) {}
 
-
-
-
-
         /* Usage:
          * Called after each new Keyframe is inserted & optimized, with all keyframes that were part of the active window during
          * that optimization in [frames] (with final=false). Use to access the new frame pose and points.
@@ -148,10 +138,6 @@ public:
          */
         virtual void publishKeyframes(std::vector<FrameHessian*> &frames, bool final, CalibHessian* HCalib) {}
 
-
-
-
-
         /* Usage:
          * Called once for each tracked frame, with the real-time, low-delay frame pose.
          *
@@ -160,10 +146,6 @@ public:
          */
         virtual void publishCamPose(FrameShell* frame, CalibHessian* HCalib) {}
 
-
-
-
-
         /* Usage:
          * Called once for each new frame, before it is tracked (i.e., it doesn't have a pose yet).
          *
@@ -171,8 +153,6 @@ public:
          * Always called, no overhead if not used.
          */
         virtual void pushLiveFrame(FrameHessian* image) {}
-
-
 
 
         /* called once after a new keyframe is created, with the color-coded, forward-warped inverse depthmap for that keyframe,
@@ -184,8 +164,6 @@ public:
         virtual void pushDepthImage(MinimalImageB3* image) {}
         virtual bool needPushDepthImage() {return false;}
 
-
-
         /* Usage:
          * called once after a new keyframe is created, with the forward-warped inverse depthmap for that keyframe.
          * (<= 0 for pixels without inv. depth value, >0 for pixels with inv. depth value)
@@ -194,8 +172,6 @@ public:
          * Always called, almost no overhead if not used.
          */
         virtual void pushDepthImageFloat(MinimalImageF* image, FrameHessian* KF ) {}
-
-
 
         /* call on finish */
         virtual void join() {}

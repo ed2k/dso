@@ -85,6 +85,7 @@ void KeyFrameDisplay::setFromF(FrameShell* frame, CalibHessian* HCalib)
 void KeyFrameDisplay::setFromKF(FrameHessian* fh, CalibHessian* HCalib)
 {
 	setFromF(fh->shell, HCalib);
+    fh->shell->keyFrameDisplay = this;
 
 	// add all traces, inlier and outlier points.
 	int npoints = 	fh->immaturePoints.size() +
@@ -232,16 +233,19 @@ bool KeyFrameDisplay::refreshPC(bool canRefresh, float scaledTH, float absTH, in
 			continue;
 
 
-		for(int pnt=0;pnt<patternNum;pnt++)
+		//for(int pnt=0;pnt<patternNum;pnt++)
+		for(int pnt=4;pnt<5;pnt++)
 		{
 
-			if(my_sparsifyFactor > 1 && rand()%my_sparsifyFactor != 0) continue;
+			//if(my_sparsifyFactor > 1 && rand()%my_sparsifyFactor != 0) continue;
 			int dx = patternP[pnt][0];
 			int dy = patternP[pnt][1];
 
 			tmpVertexBuffer[vertexBufferNumPoints][0] = ((originalInputSparse[i].u+dx)*fxi + cxi) * depth;
 			tmpVertexBuffer[vertexBufferNumPoints][1] = ((originalInputSparse[i].v+dy)*fyi + cyi) * depth;
-			tmpVertexBuffer[vertexBufferNumPoints][2] = depth*(1 + 2*fxi * (rand()/(float)RAND_MAX-0.5f));
+			tmpVertexBuffer[vertexBufferNumPoints][2] = depth;
+			//tmpVertexBuffer[vertexBufferNumPoints][2] = depth*(1 + 2*fxi * (rand()/(float)RAND_MAX-0.5f));
+            //printf("kfd %d ", id);
             //for(int i=0;i<3;i++)printf("%f ", tmpVertexBuffer[vertexBufferNumPoints][i]);
             //printf("\n");
 

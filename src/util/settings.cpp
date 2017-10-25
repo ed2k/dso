@@ -22,10 +22,8 @@
 */
 
 
-
 #include "util/settings.h"
 #include <boost/bind.hpp>
-
 
 namespace dso
 {
@@ -53,14 +51,10 @@ float setting_initialAffAPrior = 1e14;
 float setting_initialCalibHessian = 5e9;
 
 
-
-
-
 /* some modes for solving the resulting linear system (e.g. orthogonalize wrt. unobservable dimensions) */
 int setting_solverMode = SOLVER_FIX_LAMBDA | SOLVER_ORTHOGONALIZE_X_LATER;
 double setting_solverModeDelta = 0.00001;
 bool setting_forceAceptStep = true;
-
 
 
 /* some thresholds on when to activate / marginalize points */
@@ -84,13 +78,9 @@ float setting_thOptIterations=1.2; // factor on break threshold for GN iteration
 
 
 
-
-
 /* Outlier Threshold on photometric energy */
 float setting_outlierTH = 12*12;					// higher -> less strict
 float setting_outlierTHSumComponent = 50*50; 		// higher -> less strong gradient-based reweighting .
-
-
 
 
 int setting_pattern = 8;						// point pattern used. DISABLED.
@@ -106,11 +96,6 @@ float setting_reTrackThreshold = 1.5; // (larger = re-track more often)
 int   setting_minGoodActiveResForMarg=3;
 int   setting_minGoodResForMarg=4;
 
-
-
-
-
-
 // 0 = nothing.
 // 1 = apply inv. response.
 // 2 = apply inv. response & remove V.
@@ -121,14 +106,7 @@ float setting_affineOptModeB = 1e8; //-1: fix. >=0: optimize (with prior, if > 0
 
 int setting_gammaWeightsPixelSelect = 1; // 1 = use original intensity for pixel selection; 0 = use gamma-corrected intensity.
 
-
-
-
 float setting_huberTH = 9; // Huber Threshold
-
-
-
-
 
 // parameters controlling adaptive energy threshold computation.
 float setting_frameEnergyTHConstWeight = 0.5;
@@ -138,18 +116,11 @@ float setting_overallEnergyTHWeight = 1;
 float setting_coarseCutoffTH = 20;
 
 
-
-
-
 // parameters controlling pixel selection
 float setting_minGradHistCut = 0.5;
 float setting_minGradHistAdd = 7;
 float setting_gradDownweightPerLevel = 0.75;
 bool  setting_selectDirectionDistribution = true;
-
-
-
-
 
 
 /* settings controling initial immature point tracking */
@@ -165,8 +136,6 @@ float setting_trace_slackInterval = 1.5;			// if pixel-interval is smaller than 
 float setting_trace_minImprovementFactor = 2;		// if pixel-interval is smaller than this, leave it be.
 
 
-
-
 // for benchmarking different undistortion settings
 float benchmarkSetting_fxfyfac = 0;
 int benchmarkSetting_width = 0;
@@ -176,13 +145,11 @@ float benchmark_varBlurNoise = 0;
 float benchmark_initializerSlackFactor = 1;
 int benchmark_noiseGridsize = 3;
 
-
 float freeDebugParam1 = 1;
 float freeDebugParam2 = 1;
 float freeDebugParam3 = 1;
 float freeDebugParam4 = 1;
 float freeDebugParam5 = 1;
-
 
 
 bool disableReconfigure=false;
@@ -191,7 +158,6 @@ bool multiThreading = true;
 bool disableAllDisplay = false;
 bool setting_onlyLogKFPoses = true;
 bool setting_logStuff = true;
-
 
 
 bool goStepByStep = false;
@@ -226,10 +192,7 @@ void handleKey(char k)
 		printf("new freeDebugParam5: %f!\n", freeDebugParam5);
 		break;
 	}
-
 }
-
-
 
 
 int staticPattern[10][40][2] = {

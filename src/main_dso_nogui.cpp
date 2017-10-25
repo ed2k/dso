@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -91,8 +91,6 @@ void exitThread()
 	while(true) pause();
 }
 
-
-
 void settingsDefault(int preset)
 {
 	printf("\n=============== PRESET Settings: ===============\n");
@@ -145,10 +143,6 @@ void settingsDefault(int preset)
 }
 
 
-
-
-
-
 void parseArgument(char* arg)
 {
 	int option;
@@ -182,7 +176,6 @@ void parseArgument(char* arg)
 		return;
 	}
 
-
 	if(1==sscanf(arg,"rec=%d",&option))
 	{
 		if(option==0)
@@ -192,8 +185,6 @@ void parseArgument(char* arg)
 		}
 		return;
 	}
-
-
 
 	if(1==sscanf(arg,"noros=%d",&option))
 	{
@@ -322,7 +313,6 @@ void parseArgument(char* arg)
 
 	if(1==sscanf(arg,"mode=%d",&option))
 	{
-
 		mode = option;
 		if(option==0)
 		{
@@ -349,31 +339,22 @@ void parseArgument(char* arg)
 	printf("could not parse argument \"%s\"!!!!\n", arg);
 }
 
-
-
 int main( int argc, char** argv )
 {
-	//setlocale(LC_ALL, "");
 	for(int i=1; i<argc;i++)
 		parseArgument(argv[i]);
 
 	// hook crtl+C.
 	boost::thread exThread = boost::thread(exitThread);
 
-
 	ImageFolderReader* reader = new ImageFolderReader(source,calib, gammaCalib, vignette);
 	reader->setGlobalCalibration();
-
-
 
 	if(setting_photometricCalibration > 0 && reader->getPhotometricGamma() == 0)
 	{
 		printf("ERROR: dont't have photometric calibation. Need to use commandline options mode=1 or mode=2 ");
 		exit(1);
 	}
-
-
-
 
 	int lstart=start;
 	int lend = end;
@@ -388,32 +369,19 @@ int main( int argc, char** argv )
 		linc = -1;
 	}
 
-
-
 	FullSystem* fullSystem = new FullSystem();
 	fullSystem->setGammaFunction(reader->getPhotometricGamma());
 	fullSystem->linearizeOperation = (playbackSpeed==0);
 
-
-
-
-
-
-
     IOWrap::PangolinDSOViewer* viewer = 0;
-	if(!disableAllDisplay)
+	//if(!disableAllDisplay)
     {
         viewer = new IOWrap::PangolinDSOViewer(wG[0],hG[0], false);
         fullSystem->outputWrapper.push_back(viewer);
     }
 
-
-
     if(useSampleOutput)
         fullSystem->outputWrapper.push_back(new IOWrap::SampleOutputWrapper());
-
-
-
 
     // to make MacOS happy: run this in dedicated thread -- and use this one to run the GUI.
     std::thread runthread([&]() {
@@ -471,7 +439,6 @@ int main( int argc, char** argv )
                 img = reader->getImage(i);
 
 
-
             bool skipFrame=false;
             if(playbackSpeed!=0)
             {
@@ -487,12 +454,7 @@ int main( int argc, char** argv )
                 }
             }
 
-
-
             if(!skipFrame) fullSystem->addActiveFrame(img, i);
-
-
-
 
             delete img;
 
@@ -511,7 +473,6 @@ int main( int argc, char** argv )
                     fullSystem->setGammaFunction(reader->getPhotometricGamma());
                     fullSystem->linearizeOperation = (playbackSpeed==0);
 
-
                     fullSystem->outputWrapper = wraps;
 
                     setting_fullResetRequested=false;
@@ -523,16 +484,14 @@ int main( int argc, char** argv )
                     printf("LOST!!\n");
                     break;
             }
-
         }
         fullSystem->blockUntilMappingIsFinished();
         clock_t ended = clock();
         struct timeval tv_end;
         gettimeofday(&tv_end, NULL);
 
-
         fullSystem->printResult("result.txt");
-
+        viewer->printPC();
 
         int numFramesProcessed = abs(idsToPlay[0]-idsToPlay.back());
         double numSecondsProcessed = fabs(reader->getTimestamp(idsToPlay[0])-reader->getTimestamp(idsToPlay.back()));
@@ -560,12 +519,10 @@ int main( int argc, char** argv )
             tmlog.flush();
             tmlog.close();
         }
-
     });
 
-
     if(viewer != 0)
-        viewer->run();
+        viewer->close();
 
     runthread.join();
 
@@ -575,14 +532,7 @@ int main( int argc, char** argv )
 		delete ow;
 	}
 
-
-
-	printf("DELETE FULLSYSTEM!\n");
 	delete fullSystem;
-
-	printf("DELETE READER!\n");
 	delete reader;
-
-	printf("EXIT NOW!\n");
 	return 0;
 }
