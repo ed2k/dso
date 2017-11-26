@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -156,8 +156,8 @@ private:
 	void applyStep(int lvl);
 
 	void makeGradients(Eigen::Vector3f** data);
-
-    void debugPlot(int lvl, std::vector<IOWrap::Output3DWrapper*> &wraps);
+    bool debugPlot;
+    void debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrapper*> &wraps);
 	void makeNN();
 };
 

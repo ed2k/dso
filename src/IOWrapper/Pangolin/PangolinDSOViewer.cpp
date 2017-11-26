@@ -195,13 +195,9 @@ void PangolinDSOViewer::run()
 		openImagesMutex.lock();
 		if(videoImgChanged) 	texVideo.Upload(internalVideoImg->data,GL_BGR,GL_UNSIGNED_BYTE);
 		if(kfImgChanged) 		texKFDepth.Upload(internalKFImg->data,GL_BGR,GL_UNSIGNED_BYTE);
-		if(kfImgChanged) 		texResidual.Upload(internalKFImg->data,GL_BGR,GL_UNSIGNED_BYTE);
-		//if(resImgChanged) 		texResidual.Upload(internalResImg->data,GL_BGR,GL_UNSIGNED_BYTE);
+		if(resImgChanged) 		texResidual.Upload(internalResImg->data,GL_BGR,GL_UNSIGNED_BYTE);
 		videoImgChanged=kfImgChanged=resImgChanged=false;
 		openImagesMutex.unlock();
-
-
-
 
 		// update fps counters
 		{
@@ -413,11 +409,6 @@ void PangolinDSOViewer::drawConstraints()
 		glEnd();
 	}
 }
-
-
-
-
-
 
 void PangolinDSOViewer::publishGraph(const std::map<uint64_t,Eigen::Vector2i> &connectivity)
 {

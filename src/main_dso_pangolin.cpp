@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -389,15 +389,9 @@ int main( int argc, char** argv )
 	}
 
 
-
 	FullSystem* fullSystem = new FullSystem();
 	fullSystem->setGammaFunction(reader->getPhotometricGamma());
 	fullSystem->linearizeOperation = (playbackSpeed==0);
-
-
-
-
-
 
 
     IOWrap::PangolinDSOViewer* viewer = 0;
@@ -411,8 +405,6 @@ int main( int argc, char** argv )
 
     if(useSampleOutput)
         fullSystem->outputWrapper.push_back(new IOWrap::SampleOutputWrapper());
-
-
 
 
     // to make MacOS happy: run this in dedicated thread -- and use this one to run the GUI.
@@ -471,7 +463,6 @@ int main( int argc, char** argv )
                 img = reader->getImage(i);
 
 
-
             bool skipFrame=false;
             if(playbackSpeed!=0)
             {
@@ -488,10 +479,7 @@ int main( int argc, char** argv )
             }
 
 
-
             if(!skipFrame) fullSystem->addActiveFrame(img, i);
-
-
 
 
             delete img;

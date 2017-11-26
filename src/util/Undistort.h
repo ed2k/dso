@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -72,7 +72,7 @@ public:
 
 	virtual void distortCoordinates(float* in_x, float* in_y, float* out_x, float* out_y, int n) const = 0;
 
-	
+
 	inline const Mat33 getK() const {return K;};
 	inline const Eigen::Vector2i getSize() const {return Eigen::Vector2i(w,h);};
 	inline const VecX getOriginalParameter() const {return parsOrg;};
@@ -135,6 +135,15 @@ public:
     ~UndistortEquidistant();
     void distortCoordinates(float* in_x, float* in_y, float* out_x, float* out_y, int n) const;
 
+};
+
+class UndistortDummy : public Undistort
+{
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    UndistortDummy(const char* configFileName, bool noprefix);
+	~UndistortDummy();
+	void distortCoordinates(float* in_x, float* in_y, float* out_x, float* out_y, int n) const;
 };
 
 class UndistortPinhole : public Undistort

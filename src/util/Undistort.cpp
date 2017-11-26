@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -23,7 +23,6 @@
 
 
 
-
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -41,12 +40,6 @@ namespace dso
 {
 
 
-
-
-
-
-
-
 PhotometricUndistorter::PhotometricUndistorter(
 		std::string file,
 		std::string noiseImage,
@@ -59,30 +52,22 @@ PhotometricUndistorter::PhotometricUndistorter(
 	w = w_;
 	h = h_;
 	output = new ImageAndExposure(w,h);
-	if(file=="" || vignetteImage=="")
-	{
-		printf("NO PHOTOMETRIC Calibration!\n");
-	}
-
-
-	// read G.
 	std::ifstream f(file.c_str());
-	printf("Reading Photometric Calibration from file %s\n",file.c_str());
-	if (!f.good())
-	{
-		printf("PhotometricUndistorter: Could not open file!\n");
-		return;
-	}
-
-
-
-	{
+	if(setting_photometricCalibration==0 || !f.good()) {
+		printf("NO PHOTOMETRIC Calibration!\n");
+    	if (!f.good())
+	    {
+		    printf("PhotometricUndistorter: Could not open file!\n");
+    	}
+        GDepth = 256;
+        for(int i=0;i<GDepth;i++) G[i]=1.0f*i;
+    } else {
+	    printf("Reading Photometric Calibration from file %s\n",file.c_str());
 		std::string line;
 		std::getline( f, line );
 		std::istringstream l1i( line );
-		std::vector<float> Gvec = std::vector<float>( std::istream_iterator<float>(l1i), std::istream_iterator<float>() );
-
-
+		std::vector<float> Gvec = std::vector<float>(
+                std::istream_iterator<float>(l1i), std::istream_iterator<float>() );
 
         GDepth = Gvec.size();
 
@@ -91,7 +76,6 @@ PhotometricUndistorter::PhotometricUndistorter(
             printf("PhotometricUndistorter: invalid format! got %d entries in first line, expected at least 256!\n",(int)Gvec.size());
             return;
         }
-
 
         for(int i=0;i<GDepth;i++) G[i] = Gvec[i];
 
@@ -106,15 +90,9 @@ PhotometricUndistorter::PhotometricUndistorter(
 
 		float min=G[0];
         float max=G[GDepth-1];
-        for(int i=0;i<GDepth;i++) G[i] = 255.0 * (G[i] - min) / (max-min);			// make it to 0..255 => 0..255.
+        for(int i=0;i<GDepth;i++) G[i] = 255.0 * (G[i] - min) / (max-min);
+        // make it to 0..255 => 0..255.
 	}
-
-	if(setting_photometricCalibration==0)
-	{
-        for(int i=0;i<GDepth;i++) G[i]=255.0f*i/(float)(GDepth-1);
-	}
-
-
 
 	printf("Reading Vignette Image from %s\n",vignetteImage.c_str());
 	MinimalImage<unsigned short>* vm16 = IOWrap::readImageBW_16U(vignetteImage.c_str());
@@ -163,7 +141,8 @@ PhotometricUndistorter::PhotometricUndistorter(
 		printf("PhotometricUndistorter: Invalid vignette image\n");
 		if(vm16!=0) delete vm16;
 		if(vm8!=0) delete vm8;
-		return;
+		for(int i=0;i<w*h;i++)
+			vignetteMap[i] = 1.0f;
 	}
 
 	if(vm16!=0) delete vm16;
@@ -177,6 +156,7 @@ PhotometricUndistorter::PhotometricUndistorter(
 	printf("Successfully read photometric calibration!\n");
 	valid = true;
 }
+
 PhotometricUndistorter::~PhotometricUndistorter()
 {
 	if(vignetteMap != 0) delete[] vignetteMap;
@@ -263,7 +243,8 @@ Undistort::~Undistort()
 	if(remapY != 0) delete[] remapY;
 }
 
-Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::string gammaFilename, std::string vignetteFilename)
+Undistort* Undistort::getUndistorterForFile(std::string configFilename,
+        std::string gammaFilename, std::string vignetteFilename)
 {
 	printf("Reading Calibration from file %s",configFilename.c_str());
 
@@ -272,8 +253,7 @@ Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::str
 	{
 		f.close();
 		printf(" ... not found. Cannot operate without calibration, shutting down.\n");
-		f.close();
-		return 0;
+        return new UndistortDummy("", false);
 	}
 
 	printf(" ... found!\n");
@@ -294,7 +274,6 @@ Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::str
         u = new UndistortRadTan(configFilename.c_str(), true);
 		if(!u->isValid()) {delete u; return 0; }
     }
-
     // for backwards-compatibility: Use Pinhole / FoV model for 5 parameter.
     else if(std::sscanf(l1.c_str(), "%f %f %f %f %f",
 			&ic[0], &ic[1], &ic[2], &ic[3], &ic[4]) == 5)
@@ -312,11 +291,6 @@ Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::str
 			if(!u->isValid()) {delete u; return 0; }
 		}
 	}
-
-
-
-
-
     // clean model selection implementation.
     else if(std::sscanf(l1.c_str(), "KannalaBrandt %f %f %f %f %f %f %f %f",
             &ic[0], &ic[1], &ic[2], &ic[3],
@@ -325,8 +299,6 @@ Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::str
         u = new UndistortKB(configFilename.c_str(), false);
         if(!u->isValid()) {delete u; return 0; }
     }
-
-
     else if(std::sscanf(l1.c_str(), "RadTan %f %f %f %f %f %f %f %f",
             &ic[0], &ic[1], &ic[2], &ic[3],
             &ic[4], &ic[5], &ic[6], &ic[7]) == 8)
@@ -334,8 +306,6 @@ Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::str
         u = new UndistortRadTan(configFilename.c_str(), false);
         if(!u->isValid()) {delete u; return 0; }
     }
-
-
     else if(std::sscanf(l1.c_str(), "EquiDistant %f %f %f %f %f %f %f %f",
             &ic[0], &ic[1], &ic[2], &ic[3],
             &ic[4], &ic[5], &ic[6], &ic[7]) == 8)
@@ -343,8 +313,6 @@ Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::str
         u = new UndistortEquidistant(configFilename.c_str(), false);
         if(!u->isValid()) {delete u; return 0; }
     }
-
-
     else if(std::sscanf(l1.c_str(), "FOV %f %f %f %f %f",
             &ic[0], &ic[1], &ic[2], &ic[3],
             &ic[4]) == 5)
@@ -352,8 +320,6 @@ Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::str
         u = new UndistortFOV(configFilename.c_str(), false);
         if(!u->isValid()) {delete u; return 0; }
     }
-
-
     else if(std::sscanf(l1.c_str(), "Pinhole %f %f %f %f %f",
             &ic[0], &ic[1], &ic[2], &ic[3],
             &ic[4]) == 5)
@@ -361,8 +327,6 @@ Undistort* Undistort::getUndistorterForFile(std::string configFilename, std::str
         u = new UndistortPinhole(configFilename.c_str(), false);
         if(!u->isValid()) {delete u; return 0; }
     }
-
-
     else
     {
         printf("could not read calib file! exit.");
@@ -720,7 +684,7 @@ void Undistort::readFromFile(const char* configFileName, int nPars, std::string 
 	passthrough=false;
 	remapX = 0;
 	remapY = 0;
-	
+
 	float outputCalibration[5];
 
 	parsOrg = VecX(nPars);
@@ -1005,10 +969,6 @@ void UndistortFOV::distortCoordinates(float* in_x, float* in_y, float* out_x, fl
 }
 
 
-
-
-
-
 UndistortRadTan::UndistortRadTan(const char* configFileName, bool noprefix)
 {
     printf("Creating RadTan undistorter\n");
@@ -1192,7 +1152,14 @@ void UndistortKB::distortCoordinates(float* in_x, float* in_y, float* out_x, flo
 
 
 
+UndistortDummy::UndistortDummy(const char* configFileName, bool noprefix) {
 
+}
+UndistortDummy::~UndistortDummy() {
+}
+void UndistortDummy::distortCoordinates(float* in_x, float* in_y, float* out_x, float* out_y, int n) const
+{
+}
 
 UndistortPinhole::UndistortPinhole(const char* configFileName, bool noprefix)
 {

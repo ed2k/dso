@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -257,25 +257,18 @@ bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IO
 	for(int i=0;i<pyrLevelsUsed-1;i++)
 		propagateUp(i);
 
-
-
-
 	frameID++;
 	if(!snapped) snappedAt=0;
 
 	if(snapped && snappedAt==0)
 		snappedAt = frameID;
 
-
-
-    debugPlot(0,wraps);
-
-
+    debugPlot_func(0,wraps);
 
 	return snapped && frameID > snappedAt+5;
 }
 
-void CoarseInitializer::debugPlot(int lvl, std::vector<IOWrap::Output3DWrapper*> &wraps)
+void CoarseInitializer::debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrapper*> &wraps)
 {
     bool needCall = false;
     for(IOWrap::Output3DWrapper* ow : wraps)
