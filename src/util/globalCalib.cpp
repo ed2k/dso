@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -57,13 +57,13 @@ namespace dso
 				pyrLevelsUsed-1, wlvl, hlvl);
 		if(wlvl>100 && hlvl > 100)
 		{
-			printf("\n\n===============WARNING!===================\n "
+			printf("\n===============WARNING!===================\n "
 					"using not enough pyramid levels.\n"
 					"Consider scaling to a resolution that is a multiple of a power of 2.\n");
 		}
 		if(pyrLevelsUsed < 3)
 		{
-			printf("\n\n===============WARNING!===================\n "
+			printf("\n===============WARNING!===================\n "
 					"I need higher resolution.\n"
 					"I will probably segfault.\n");
 		}

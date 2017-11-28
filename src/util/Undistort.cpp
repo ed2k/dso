@@ -709,7 +709,7 @@ void Undistort::readFromFile(const char* configFileName, int nPars, std::string 
 		if(std::sscanf(l1.c_str(), buf, &parsOrg[0], &parsOrg[1], &parsOrg[2], &parsOrg[3], &parsOrg[4]) == 5 &&
 				std::sscanf(l2.c_str(), "%d %d", &wOrg, &hOrg) == 2)
 		{
-			printf("Input resolution: %d %d\n",wOrg, hOrg);
+			printf("Input5 resolution: %d %d\n",wOrg, hOrg);
 			printf("In: %f %f %f %f %f\n",
 					parsOrg[0], parsOrg[1], parsOrg[2], parsOrg[3], parsOrg[4]);
 		}
@@ -730,7 +730,7 @@ void Undistort::readFromFile(const char* configFileName, int nPars, std::string 
 				&parsOrg[5], &parsOrg[6], &parsOrg[7]) == 8 &&
 				std::sscanf(l2.c_str(), "%d %d", &wOrg, &hOrg) == 2)
 		{
-			printf("Input resolution: %d %d\n",wOrg, hOrg);
+			printf("Input8 resolution: %d %d\n",wOrg, hOrg);
 			printf("In: %s%f %f %f %f %f %f %f %f\n",
 					prefix.c_str(),
 					parsOrg[0], parsOrg[1], parsOrg[2], parsOrg[3], parsOrg[4], parsOrg[5], parsOrg[6], parsOrg[7]);
@@ -749,8 +749,6 @@ void Undistort::readFromFile(const char* configFileName, int nPars, std::string 
 		return;
 	}
 
-
-
     if(parsOrg[2] < 1 && parsOrg[3] < 1)
     {
         printf("\n\nFound fx=%f, fy=%f, cx=%f, cy=%f.\n I'm assuming this is the \"relative\" calibration file format,"
@@ -768,8 +766,6 @@ void Undistort::readFromFile(const char* configFileName, int nPars, std::string 
         parsOrg[2] = parsOrg[2] * wOrg - 0.5;
         parsOrg[3] = parsOrg[3] * hOrg - 0.5;
     }
-
-
 
 	// l3
 	if(l3 == "crop")
@@ -848,8 +844,6 @@ void Undistort::readFromFile(const char* configFileName, int nPars, std::string 
 	}
 	else
 	{
-
-
         if(outputCalibration[2] > 1 || outputCalibration[3] > 1)
         {
             printf("\n\n\nWARNING: given output calibration (%f %f %f %f) seems wrong. It needs to be relative to image width / height!\n\n\n",
@@ -908,10 +902,7 @@ void Undistort::readFromFile(const char* configFileName, int nPars, std::string 
 
 	valid = true;
 
-
-
-
-	printf("\nRectified Kamera Matrix:\n");
+	printf("\nRectified Camera Matrix:\n");
 	std::cout << K << "\n\n";
 
 }

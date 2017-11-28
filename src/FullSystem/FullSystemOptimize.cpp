@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -24,7 +24,7 @@
 
 
 #include "FullSystem/FullSystem.h"
- 
+
 #include "stdio.h"
 #include "util/globalFuncs.h"
 #include <Eigen/LU>
@@ -209,9 +209,6 @@ Vec3 FullSystem::linearizeAll(bool fixLinearization)
 	return Vec3(lastEnergyP, lastEnergyR, num);
 }
 
-
-
-
 // applies step to linearization point.
 bool FullSystem::doStepFromBackup(float stepfacC,float stepfacT,float stepfacR,float stepfacA,float stepfacD)
 {
@@ -284,8 +281,6 @@ bool FullSystem::doStepFromBackup(float stepfacC,float stepfacT,float stepfacR,f
 	sumID /= numID;
 	sumNID /= numID;
 
-
-
     if(!setting_debugout_runquiet)
         printf("STEPS: A %.1f; B %.1f; R %.1f; T %.1f. \t",
                 sqrtf(sumA) / (0.0005*setting_thOptIterations),
@@ -293,11 +288,8 @@ bool FullSystem::doStepFromBackup(float stepfacC,float stepfacT,float stepfacR,f
                 sqrtf(sumR) / (0.00005*setting_thOptIterations),
                 sqrtf(sumT)*sumNID / (0.00005*setting_thOptIterations));
 
-
 	EFDeltaValid=false;
 	setPrecalcValues();
-
-
 
 	return sqrtf(sumA) < 0.0005*setting_thOptIterations &&
 			sqrtf(sumB) < 0.00005*setting_thOptIterations &&
@@ -307,8 +299,6 @@ bool FullSystem::doStepFromBackup(float stepfacC,float stepfacT,float stepfacR,f
 //	printf("mean steps: %f %f %f!\n",
 //			meanStepC, meanStepP, meanStepD);
 }
-
-
 
 // sets linearization point.
 void FullSystem::backupState(bool backupLastStep)
@@ -371,9 +361,7 @@ void FullSystem::loadSateBackup()
 
             ph->setIdepthZero(ph->idepth_backup);
 		}
-
 	}
-
 
 	EFDeltaValid=false;
 	setPrecalcValues();
@@ -387,7 +375,6 @@ double FullSystem::calcMEnergy()
 	//ef->makeIDX();
 	//ef->setDeltaF(&Hcalib);
 	return ef->calcMEnergyF();
-
 }
 
 
@@ -401,7 +388,6 @@ void FullSystem::printOptRes(const Vec3 &res, double resL, double resM, double r
 			a,
 			b
 	);
-
 }
 
 
@@ -411,11 +397,6 @@ float FullSystem::optimize(int mnumOptIts)
 	if(frameHessians.size() < 2) return 0;
 	if(frameHessians.size() < 3) mnumOptIts = 20;
 	if(frameHessians.size() < 4) mnumOptIts = 15;
-
-
-
-
-
 
 	// get statistics and active residuals.
 
@@ -446,10 +427,6 @@ float FullSystem::optimize(int mnumOptIts)
 	double lastEnergyL = calcLEnergy();
 	double lastEnergyM = calcMEnergy();
 
-
-
-
-
 	if(multiThreading)
 		treadReduce.reduce(boost::bind(&FullSystem::applyRes_Reductor, this, true, _1, _2, _3, _4), 0, activeResiduals.size(), 50);
 	else
@@ -463,8 +440,6 @@ float FullSystem::optimize(int mnumOptIts)
     }
 
 	debugPlotTracking();
-
-
 
 	double lambda = 1e-1;
 	float stepsize=1;
@@ -491,19 +466,10 @@ float FullSystem::optimize(int mnumOptIts)
 
 		bool canbreak = doStepFromBackup(stepsize,stepsize,stepsize,stepsize,stepsize);
 
-
-
-
-
-
-
 		// eval new energy!
 		Vec3 newEnergy = linearizeAll(false);
 		double newEnergyL = calcLEnergy();
 		double newEnergyM = calcMEnergy();
-
-
-
 
         if(!setting_debugout_runquiet)
         {
@@ -541,11 +507,8 @@ float FullSystem::optimize(int mnumOptIts)
 			lambda *= 1e2;
 		}
 
-
 		if(canbreak && iteration >= setting_minOptIterations) break;
 	}
-
-
 
 	Vec10 newStateZero = Vec10::Zero();
 	newStateZero.segment<2>(6) = frameHessians.back()->get_state().segment<2>(6);
@@ -557,13 +520,7 @@ float FullSystem::optimize(int mnumOptIts)
 	ef->setAdjointsF(&Hcalib);
 	setPrecalcValues();
 
-
-
-
 	lastEnergy = linearizeAll(true);
-
-
-
 
 	if(!std::isfinite((double)lastEnergy[0]) || !std::isfinite((double)lastEnergy[1]) || !std::isfinite((double)lastEnergy[2]))
     {
@@ -592,18 +549,10 @@ float FullSystem::optimize(int mnumOptIts)
 		}
 	}
 
-
-
-
 	debugPlotTracking();
 
 	return sqrtf((float)(lastEnergy[0] / (patternNum*ef->resInA)));
-
 }
-
-
-
-
 
 void FullSystem::solveSystem(int iteration, double lambda)
 {
@@ -616,8 +565,6 @@ void FullSystem::solveSystem(int iteration, double lambda)
 	ef->solveSystemF(iteration, lambda,&Hcalib);
 }
 
-
-
 double FullSystem::calcLEnergy()
 {
 	if(setting_forceAceptStep) return 0;
@@ -626,7 +573,6 @@ double FullSystem::calcLEnergy()
 	return Ef;
 
 }
-
 
 void FullSystem::removeOutliers()
 {
@@ -651,9 +597,6 @@ void FullSystem::removeOutliers()
 	}
 	ef->dropPointsF();
 }
-
-
-
 
 std::vector<VecX> FullSystem::getNullspaces(
 		std::vector<VecX> &nullspaces_pose,

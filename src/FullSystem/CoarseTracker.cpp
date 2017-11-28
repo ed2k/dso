@@ -719,10 +719,10 @@ bool CoarseTracker::trackNewestCoarse(
 
 
 
-void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt, std::vector<IOWrap::Output3DWrapper*> &wraps)
+void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt,
+        std::vector<IOWrap::Output3DWrapper*> &wraps)
 {
     if(w[1] == 0) return;
-
 
 	int lvl = 0;
 
@@ -751,7 +751,6 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt, std::ve
 			}
 			else
 			{
-
 				// slowly adapt: change by maximum 10% of old span.
 				float maxChange = 0.3*(*maxID_pt - *minID_pt);
 
@@ -771,7 +770,6 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt, std::ve
 			}
 		}
 
-
 		MinimalImageB3 mf(w[lvl], h[lvl]);
 		mf.setBlack();
 		for(int i=0;i<h[lvl]*w[lvl];i++)
@@ -789,10 +787,10 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt, std::ve
 				float* bp = idepth[lvl]+idx;
 
 				if(bp[0] > 0) {sid+=bp[0]; nid++;}
-				if(bp[1] > 0) {sid+=bp[1]; nid++;}
-				if(bp[-1] > 0) {sid+=bp[-1]; nid++;}
-				if(bp[wl] > 0) {sid+=bp[wl]; nid++;}
-				if(bp[-wl] > 0) {sid+=bp[-wl]; nid++;}
+				//if(bp[1] > 0) {sid+=bp[1]; nid++;}
+				//if(bp[-1] > 0) {sid+=bp[-1]; nid++;}
+				//if(bp[wl] > 0) {sid+=bp[wl]; nid++;}
+				//if(bp[-wl] > 0) {sid+=bp[-wl]; nid++;}
 
 				if(bp[0] > 0 || nid >= 3)
 				{
@@ -803,7 +801,6 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt, std::ve
 			}
         //IOWrap::displayImage("coarseDepth LVL0", &mf, false);
 
-
         for(IOWrap::Output3DWrapper* ow : wraps)
             ow->pushDepthImage(&mf);
 
@@ -813,11 +810,8 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt, std::ve
 			snprintf(buf, 1000, "images_out/predicted_%05d_%05d.png", lastRef->shell->id, refFrameID);
 			IOWrap::writeImage(buf,&mf);
 		}
-
 	}
 }
-
-
 
 void CoarseTracker::debugPlotIDepthMapFloat(std::vector<IOWrap::Output3DWrapper*> &wraps)
 {
@@ -827,16 +821,6 @@ void CoarseTracker::debugPlotIDepthMapFloat(std::vector<IOWrap::Output3DWrapper*
     for(IOWrap::Output3DWrapper* ow : wraps)
         ow->pushDepthImageFloat(&mim, lastRef);
 }
-
-
-
-
-
-
-
-
-
-
 
 CoarseDistanceMap::CoarseDistanceMap(int ww, int hh)
 {
@@ -853,6 +837,7 @@ CoarseDistanceMap::CoarseDistanceMap(int ww, int hh)
 
 	w[0]=h[0]=0;
 }
+
 CoarseDistanceMap::~CoarseDistanceMap()
 {
 	delete[] fwdWarpedIDDistFinal;

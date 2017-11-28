@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -677,8 +677,6 @@ void EnergyFunctional::marginalizePointsF()
 
 void EnergyFunctional::dropPointsF()
 {
-
-
 	for(EFFrame* f : frames)
 	{
 		for(int i=0;i<(int)f->points.size();i++)
@@ -732,15 +730,10 @@ void EnergyFunctional::orthogonalize(VecX* b, MatXX* H)
 //		ns.insert(ns.end(), lastNullspaces_affB.begin(), lastNullspaces_affB.end());
 
 
-
-
-
 	// make Nullspaces matrix
 	MatXX N(ns[0].rows(), ns.size());
 	for(unsigned int i=0;i<ns.size();i++)
 		N.col(i) = ns[i].normalized();
-
-
 
 	// compute Npi := N * (N' * N)^-1 = pseudo inverse of N.
 	Eigen::JacobiSVD<MatXX> svdNN(N, Eigen::ComputeThinU | Eigen::ComputeThinV);
@@ -768,7 +761,6 @@ void EnergyFunctional::orthogonalize(VecX* b, MatXX* H)
 //	VecX eigenvaluesPost = H.eigenvalues().real();
 //	std::sort(eigenvaluesPost.data(), eigenvaluesPost.data()+eigenvaluesPost.size());
 //	std::cout << "EigPost:: " << eigenvaluesPost.transpose() << "\n";
-
 }
 
 
@@ -785,23 +777,10 @@ void EnergyFunctional::solveSystemF(int iteration, double lambda, CalibHessian* 
 	VecX  bL_top, bA_top, bM_top, b_sc;
 
 	accumulateAF_MT(HA_top, bA_top,multiThreading);
-
-
 	accumulateLF_MT(HL_top, bL_top,multiThreading);
-
-
-
 	accumulateSCF_MT(H_sc, b_sc,multiThreading);
 
-
-
 	bM_top = (bM+ HM * getStitchedDeltaF());
-
-
-
-
-
-
 
 	MatXX HFinal_top;
 	VecX bFinal_top;
@@ -811,9 +790,6 @@ void EnergyFunctional::solveSystemF(int iteration, double lambda, CalibHessian* 
 		// have a look if prior is there.
 		bool haveFirstFrame = false;
 		for(EFFrame* f : frames) if(f->frameID==0) haveFirstFrame=true;
-
-
-
 
 		MatXX HT_act =  HL_top + HA_top - H_sc;
 		VecX bT_act =   bL_top + bA_top - b_sc;
@@ -825,10 +801,6 @@ void EnergyFunctional::solveSystemF(int iteration, double lambda, CalibHessian* 
 		HFinal_top = HT_act + HM;
 		bFinal_top = bT_act + bM_top;
 
-
-
-
-
 		lastHS = HFinal_top;
 		lastbS = bFinal_top;
 
@@ -837,8 +809,6 @@ void EnergyFunctional::solveSystemF(int iteration, double lambda, CalibHessian* 
 	}
 	else
 	{
-
-
 		HFinal_top = HL_top + HM + HA_top;
 		bFinal_top = bL_top + bM_top + bA_top - b_sc;
 
@@ -848,11 +818,6 @@ void EnergyFunctional::solveSystemF(int iteration, double lambda, CalibHessian* 
 		for(int i=0;i<8*nFrames+CPARS;i++) HFinal_top(i,i) *= (1+lambda);
 		HFinal_top -= H_sc * (1.0f/(1+lambda));
 	}
-
-
-
-
-
 
 	VecX x;
 	if(setting_solverMode & SOLVER_SVD)
@@ -883,7 +848,6 @@ void EnergyFunctional::solveSystemF(int iteration, double lambda, CalibHessian* 
 			else Ub[i] /= S[i];
 		}
 		x = SVecI.asDiagonal() * svd.matrixV() * Ub;
-
 	}
 	else
 	{
@@ -891,8 +855,6 @@ void EnergyFunctional::solveSystemF(int iteration, double lambda, CalibHessian* 
 		MatXX HFinalScaled = SVecI.asDiagonal() * HFinal_top * SVecI.asDiagonal();
 		x = SVecI.asDiagonal() * HFinalScaled.ldlt().solve(SVecI.asDiagonal() * bFinal_top);//  SVec.asDiagonal() * svd.matrixV() * Ub;
 	}
-
-
 
 	if((setting_solverMode & SOLVER_ORTHOGONALIZE_X) || (iteration >= 2 && (setting_solverMode & SOLVER_ORTHOGONALIZE_X_LATER)))
 	{
@@ -929,10 +891,8 @@ void EnergyFunctional::makeIDX()
 			}
 		}
 
-
 	EFIndicesValid=true;
 }
-
 
 VecX EnergyFunctional::getStitchedDeltaF() const
 {
@@ -940,7 +900,6 @@ VecX EnergyFunctional::getStitchedDeltaF() const
 	for(int h=0;h<nFrames;h++) d.segment<8>(CPARS+8*h) = frames[h]->delta;
 	return d;
 }
-
 
 
 }

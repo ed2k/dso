@@ -350,7 +350,6 @@ void parseArgument(char* arg)
 }
 
 
-
 int main( int argc, char** argv )
 {
 	//setlocale(LC_ALL, "");
@@ -361,19 +360,14 @@ int main( int argc, char** argv )
 	boost::thread exThread = boost::thread(exitThread);
 
 
-	ImageFolderReader* reader = new ImageFolderReader(source,calib, gammaCalib, vignette);
+	ImageFolderReader* reader = new ImageFolderReader(source, calib, gammaCalib, vignette);
 	reader->setGlobalCalibration();
-
-
 
 	if(setting_photometricCalibration > 0 && reader->getPhotometricGamma() == 0)
 	{
 		printf("ERROR: dont't have photometric calibation. Need to use commandline options mode=1 or mode=2 ");
 		exit(1);
 	}
-
-
-
 
 	int lstart=start;
 	int lend = end;
@@ -400,8 +394,6 @@ int main( int argc, char** argv )
         viewer = new IOWrap::PangolinDSOViewer(wG[0],hG[0], false);
         fullSystem->outputWrapper.push_back(viewer);
     }
-
-
 
     if(useSampleOutput)
         fullSystem->outputWrapper.push_back(new IOWrap::SampleOutputWrapper());
@@ -478,9 +470,7 @@ int main( int argc, char** argv )
                 }
             }
 
-
             if(!skipFrame) fullSystem->addActiveFrame(img, i);
-
 
             delete img;
 
@@ -498,7 +488,6 @@ int main( int argc, char** argv )
                     fullSystem = new FullSystem();
                     fullSystem->setGammaFunction(reader->getPhotometricGamma());
                     fullSystem->linearizeOperation = (playbackSpeed==0);
-
 
                     fullSystem->outputWrapper = wraps;
 
@@ -518,9 +507,7 @@ int main( int argc, char** argv )
         struct timeval tv_end;
         gettimeofday(&tv_end, NULL);
 
-
         fullSystem->printResult("result.txt");
-
 
         int numFramesProcessed = abs(idsToPlay[0]-idsToPlay.back());
         double numSecondsProcessed = fabs(reader->getTimestamp(idsToPlay[0])-reader->getTimestamp(idsToPlay.back()));
@@ -548,9 +535,7 @@ int main( int argc, char** argv )
             tmlog.flush();
             tmlog.close();
         }
-
     });
-
 
     if(viewer != 0)
         viewer->run();
@@ -562,8 +547,6 @@ int main( int argc, char** argv )
 		ow->join();
 		delete ow;
 	}
-
-
 
 	printf("DELETE FULLSYSTEM!\n");
 	delete fullSystem;

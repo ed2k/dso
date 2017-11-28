@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -355,14 +355,14 @@ inline Vec3b makeJet3B(float id)
 	int icP = (id*8);
 	float ifP = (id*8)-icP;
 
-	if(icP == 0) return Vec3b(255*(0.5+0.5*ifP), 		    		  0,     					0);
-	if(icP == 1) return Vec3b(255, 					  255*(0.5*ifP),     					0);
-	if(icP == 2) return Vec3b(255, 				  255*(0.5+0.5*ifP),     					0);
-	if(icP == 3) return Vec3b(255*(1-0.5*ifP), 					255,     					255*(0.5*ifP));
-	if(icP == 4) return Vec3b(255*(0.5-0.5*ifP), 					255,     					255*(0.5+0.5*ifP));
-	if(icP == 5) return Vec3b(0, 						255*(1-0.5*ifP),     					255);
-	if(icP == 6) return Vec3b(0, 						255*(0.5-0.5*ifP),     					255);
-	if(icP == 7) return Vec3b(0, 					  				  0,     					255*(1-0.5*ifP));
+	if(icP == 0) return Vec3b(255*(0.5+0.5*ifP), 0,     	0);
+	if(icP == 1) return Vec3b(255, 				255*(0.5*ifP),	0);
+	if(icP == 2) return Vec3b(255, 				255*(0.5+0.5*ifP),	0);
+	if(icP == 3) return Vec3b(255*(1-0.5*ifP), 	255,  	255*(0.5*ifP));
+	if(icP == 4) return Vec3b(255*(0.5-0.5*ifP),255,  	255*(0.5+0.5*ifP));
+	if(icP == 5) return Vec3b(0, 				255*(1-0.5*ifP),  	255);
+	if(icP == 6) return Vec3b(0, 			    255*(0.5-0.5*ifP),	255);
+	if(icP == 7) return Vec3b(0, 				 0,  	255*(1-0.5*ifP));
 	return Vec3b(255,255,255);
 }
 
@@ -374,9 +374,5 @@ inline Vec3b makeRedGreen3B(float val)	// 0 = red, 1=green, 0.5=yellow.
 	else return Vec3b(0,255,0);
 
 }
-
-
-
-
 
 }

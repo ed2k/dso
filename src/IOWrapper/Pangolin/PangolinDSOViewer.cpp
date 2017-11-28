@@ -22,7 +22,6 @@
 */
 
 
-
 #include "PangolinDSOViewer.h"
 #include "KeyFrameDisplay.h"
 
@@ -38,13 +37,11 @@ namespace IOWrap
 {
 
 
-
 PangolinDSOViewer::PangolinDSOViewer(int w, int h, bool startRunThread)
 {
 	this->w = w;
 	this->h = h;
 	running=true;
-
 
 	{
 		boost::unique_lock<boost::mutex> lk(openImagesMutex);
@@ -58,17 +55,14 @@ PangolinDSOViewer::PangolinDSOViewer(int w, int h, bool startRunThread)
 		internalResImg->setBlack();
 	}
 
-
 	{
 		currentCam = new KeyFrameDisplay();
 	}
 
 	needReset = false;
 
-
     if(startRunThread)
         runThread = boost::thread(&PangolinDSOViewer::run, this);
-
 }
 
 
@@ -98,7 +92,6 @@ void PangolinDSOViewer::run()
 		.SetBounds(0.0, 1.0, pangolin::Attach::Pix(UI_WIDTH), 1.0, -w/(float)h)
 		.SetHandler(new pangolin::Handler3D(Visualization3D_camera));
 
-
 	// 3 images
 	pangolin::View& d_kfDepth = pangolin::Display("imgKFDepth")
 	    .SetAspect(w/(float)h);
@@ -112,7 +105,6 @@ void PangolinDSOViewer::run()
 	pangolin::GlTexture texKFDepth(w,h,GL_RGB,false,0,GL_RGB,GL_UNSIGNED_BYTE);
 	pangolin::GlTexture texVideo(w,h,GL_RGB,false,0,GL_RGB,GL_UNSIGNED_BYTE);
 	pangolin::GlTexture texResidual(w,h,GL_RGB,false,0,GL_RGB,GL_UNSIGNED_BYTE);
-
 
     pangolin::CreateDisplay()
 		  .SetBounds(0.0, 0.3, pangolin::Attach::Pix(UI_WIDTH), 1.0)
@@ -132,7 +124,6 @@ void PangolinDSOViewer::run()
 	pangolin::Var<bool> settings_showActiveConstraints("ui.ActiveConst",true,true);
 	pangolin::Var<bool> settings_showAllConstraints("ui.AllConst",false,true);
 
-
 	pangolin::Var<bool> settings_show3D("ui.show3D",true,true);
 	pangolin::Var<bool> settings_showLiveDepth("ui.showDepth",true,true);
 	pangolin::Var<bool> settings_showLiveVideo("ui.showVideo",true,true);
@@ -142,15 +133,12 @@ void PangolinDSOViewer::run()
 	pangolin::Var<bool> settings_showFullTracking("ui.showFullTracking",false,true);
 	pangolin::Var<bool> settings_showCoarseTracking("ui.showCoarseTracking",false,true);
 
-
 	pangolin::Var<int> settings_sparsity("ui.sparsity",1,1,20,false);
 	pangolin::Var<double> settings_scaledVarTH("ui.relVarTH",0.001,1e-10,1e10, true);
 	pangolin::Var<double> settings_absVarTH("ui.absVarTH",0.001,1e-10,1e10, true);
 	pangolin::Var<double> settings_minRelBS("ui.minRelativeBS",0.1,0,1, false);
 
-
 	pangolin::Var<bool> settings_resetButton("ui.Reset",false,false);
-
 
 	pangolin::Var<int> settings_nPts("ui.activePoints",setting_desiredPointDensity, 50,5000, false);
 	pangolin::Var<int> settings_nCandidates("ui.pointCandidates",setting_desiredImmatureDensity, 50,5000, false);
@@ -180,7 +168,6 @@ void PangolinDSOViewer::run()
 				float blue[3] = {0,0,1};
 				if(this->settings_showKFCameras) fh->drawCam(1,blue,0.1);
 
-
 				refreshed =+ (int)(fh->refreshPC(refreshed < 10, this->settings_scaledVarTH, this->settings_absVarTH,
 						this->settings_pointCloudMode, this->settings_minRelBS, this->settings_sparsity));
 				fh->drawPC(1);
@@ -190,12 +177,10 @@ void PangolinDSOViewer::run()
 			lk3d.unlock();
 		}
 
-
-
 		openImagesMutex.lock();
-		if(videoImgChanged) 	texVideo.Upload(internalVideoImg->data,GL_BGR,GL_UNSIGNED_BYTE);
-		if(kfImgChanged) 		texKFDepth.Upload(internalKFImg->data,GL_BGR,GL_UNSIGNED_BYTE);
-		if(resImgChanged) 		texResidual.Upload(internalResImg->data,GL_BGR,GL_UNSIGNED_BYTE);
+		if(videoImgChanged) texVideo.Upload(internalVideoImg->data,GL_BGR,GL_UNSIGNED_BYTE);
+		if(kfImgChanged) texKFDepth.Upload(internalKFImg->data,GL_BGR,GL_UNSIGNED_BYTE);
+		if(resImgChanged) texResidual.Upload(internalResImg->data,GL_BGR,GL_UNSIGNED_BYTE);
 		videoImgChanged=kfImgChanged=resImgChanged=false;
 		openImagesMutex.unlock();
 
@@ -516,7 +501,6 @@ bool PangolinDSOViewer::needPushDepthImage()
 }
 void PangolinDSOViewer::pushDepthImage(MinimalImageB3* image)
 {
-
     if(!setting_render_displayDepth) return;
     if(disableAllDisplay) return;
 

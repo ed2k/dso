@@ -128,8 +128,6 @@ FullSystem::FullSystem()
 
 	assert(retstat!=293847);
 
-
-
 	selectionMap = new float[wG[0]*hG[0]];
 
 	coarseDistanceMap = new CoarseDistanceMap(wG[0], hG[0]);
@@ -806,7 +804,6 @@ void FullSystem::addActiveFrame( ImageAndExposure* image, int id )
     if(isLost) return;
 	boost::unique_lock<boost::mutex> lock(trackMutex);
 
-
 	// =========================== add into allFrameHistory =========================
 	FrameHessian* fh = new FrameHessian();
 	FrameShell* shell = new FrameShell();
@@ -818,13 +815,9 @@ void FullSystem::addActiveFrame( ImageAndExposure* image, int id )
 	fh->shell = shell;
 	allFrameHistory.push_back(shell);
 
-
 	// =========================== make Images / derivatives etc. =========================
 	fh->ab_exposure = image->exposure_time;
     fh->makeImages(image->image, &Hcalib);
-
-
-
 
 	if(!initialized)
 	{
@@ -888,14 +881,8 @@ void FullSystem::addActiveFrame( ImageAndExposure* image, int id )
 
 		}
 
-
-
-
         for(IOWrap::Output3DWrapper* ow : outputWrapper)
             ow->publishCamPose(fh->shell, &Hcalib);
-
-
-
 
 		lock.unlock();
 		deliverTrackedFrame(fh, needToMakeKF);
@@ -904,8 +891,6 @@ void FullSystem::addActiveFrame( ImageAndExposure* image, int id )
 }
 void FullSystem::deliverTrackedFrame(FrameHessian* fh, bool needKF)
 {
-
-
 	if(linearizeOperation)
 	{
 		if(goStepByStep && lastRefStopID != coarseTracker->refFrameID)
@@ -921,8 +906,6 @@ void FullSystem::deliverTrackedFrame(FrameHessian* fh, bool needKF)
 			lastRefStopID = coarseTracker->refFrameID;
 		}
 		else handleKey( IOWrap::waitKey(1) );
-
-
 
 		if(needKF) makeKeyFrame(fh);
 		else makeNonKeyFrame(fh);
@@ -1148,21 +1131,14 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
         ow->publishKeyframes(frameHessians, false, &Hcalib);
     }
 
-
-
 	// =========================== Marginalize Frames =========================
-
 	for(unsigned int i=0;i<frameHessians.size();i++)
 		if(frameHessians[i]->flaggedForMarginalization)
 			{marginalizeFrame(frameHessians[i]); i=0;}
 
-
-
 	printLogLine();
     //printEigenValLine();
-
 }
-
 
 void FullSystem::initializeFromInitializer(FrameHessian* newFrame)
 {

@@ -12,12 +12,13 @@ while(cap.isOpened()):
     if f is None or cnt > 5900: break
     frame = f
     h,w,c = frame.shape
-    frame = cv2.resize(frame, (1280*h/w,1280))
-    #cv2.imshow('f', frame)
+    frame = cv2.resize(frame, (1280,720))
+    cv2.imshow('f', frame)
     if cnt > 3000:
       cv2.imwrite('/home/a/SEQ_0/z3/%04d.jpg' % (cnt), frame)
     cnt += 1
     print (cnt, frame.shape)
+    cv2.waitKey(1)
 
 cap.release()
 cv2.destroyAllWindows()

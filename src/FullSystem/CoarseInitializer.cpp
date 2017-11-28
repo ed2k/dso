@@ -78,7 +78,8 @@ CoarseInitializer::~CoarseInitializer()
 }
 
 
-bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IOWrap::Output3DWrapper*> &wraps)
+bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian,
+  std::vector<IOWrap::Output3DWrapper*> &wraps)
 {
 	newFrame = newFrameHessian;
 
@@ -86,8 +87,6 @@ bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IO
         ow->pushLiveFrame(newFrameHessian);
 
 	int maxIterations[] = {5,5,10,30,50};
-
-
 
 	alphaK = 2.5*2.5;//*freeDebugParam1*freeDebugParam1;
 	alphaW = 150*150;//*freeDebugParam2*freeDebugParam2;
@@ -110,20 +109,15 @@ bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IO
 		}
 	}
 
-
 	SE3 refToNew_current = thisToNext;
 	AffLight refToNew_aff_current = thisToNext_aff;
 
 	if(firstFrame->ab_exposure>0 && newFrame->ab_exposure>0)
 		refToNew_aff_current = AffLight(logf(newFrame->ab_exposure /  firstFrame->ab_exposure),0); // coarse approximation.
 
-
 	Vec3f latestRes = Vec3f::Zero();
 	for(int lvl=pyrLevelsUsed-1; lvl>=0; lvl--)
 	{
-
-
-
 		if(lvl<pyrLevelsUsed-1)
 			propagateDown(lvl+1);
 
@@ -162,7 +156,6 @@ bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IO
 			Hl = wM * Hl * wM * (0.01f/(w[lvl]*h[lvl]));
 			bl = wM * bl * (0.01f/(w[lvl]*h[lvl]));
 
-
 			Vec8f inc;
 			if(fixAffine)
 			{
@@ -172,13 +165,11 @@ bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IO
 			else
 				inc = - (wM * (Hl.ldlt().solve(bl)));	//=-H^-1 * b.
 
-
 			SE3 refToNew_new = SE3::exp(inc.head<6>().cast<double>()) * refToNew_current;
 			AffLight refToNew_aff_new = refToNew_aff_current;
 			refToNew_aff_new.a += inc[6];
 			refToNew_aff_new.b += inc[7];
 			doStep(lvl, lambda, inc);
-
 
 			Mat88f H_new, Hsc_new; Vec8f b_new, bsc_new;
 			Vec3f resNew = calcResAndGS(lvl, H_new, b_new, Hsc_new, bsc_new, refToNew_new, refToNew_aff_new, false);
@@ -187,12 +178,11 @@ bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IO
 			float eTotalNew = (resNew[0]+resNew[1]+regEnergy[1]);
 			float eTotalOld = (resOld[0]+resOld[1]+regEnergy[0]);
 
-
 			bool accept = eTotalOld > eTotalNew;
 
 			if(printDebug)
 			{
-				printf("lvl %d, it %d (l=%f) %s: %.5f + %.5f + %.5f -> %.5f + %.5f + %.5f (%.2f->%.2f) (|inc| = %f)! \t",
+			  printf("lvl %d it %d (l=%f) %s: %.5f+%.5f+%.5f->%.5f+%.5f+%.5f (%.2f->%.2f) (|inc| = %f)! ",
 						lvl, iteration, lambda,
 						(accept ? "ACCEPT" : "REJECT"),
 						sqrtf((float)(resOld[0] / resOld[2])),
@@ -209,7 +199,6 @@ bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IO
 
 			if(accept)
 			{
-
 				if(resNew[1] == alphaK*numPoints[lvl])
 					snapped = true;
 				H = H_new;
@@ -237,19 +226,14 @@ bool CoarseInitializer::trackFrame(FrameHessian* newFrameHessian, std::vector<IO
 			if(!(inc.norm() > eps) || iteration >= maxIterations[lvl] || fails >= 2)
 			{
 				Mat88f H,Hsc; Vec8f b,bsc;
-
 				quitOpt = true;
 			}
-
 
 			if(quitOpt) break;
 			iteration++;
 		}
 		latestRes = resOld;
-
 	}
-
-
 
 	thisToNext = refToNew_current;
 	thisToNext_aff = refToNew_aff_current;
@@ -275,7 +259,6 @@ void CoarseInitializer::debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrap
         needCall = needCall || ow->needPushDepthImage();
     if(!needCall) return;
 
-
 	int wl = w[lvl], hl = h[lvl];
 	Eigen::Vector3f* colorRef = firstFrame->dIp[lvl];
 
@@ -283,7 +266,6 @@ void CoarseInitializer::debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrap
 
 	for(int i=0;i<wl*hl;i++)
 		iRImg.at(i) = Vec3b(colorRef[i][0],colorRef[i][0],colorRef[i][0]);
-
 
 	int npts = numPoints[lvl];
 
@@ -299,19 +281,15 @@ void CoarseInitializer::debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrap
 	}
 	float fac = nid / sid;
 
-
-
 	for(int i=0;i<npts;i++)
 	{
 		Pnt* point = points[lvl]+i;
 
 		if(!point->isGood)
-			iRImg.setPixel9(point->u+0.5f,point->v+0.5f,Vec3b(0,0,0));
-
+			iRImg.setPixel1(point->u+0.5f,point->v+0.5f,Vec3b(0,0,0));
 		else
-			iRImg.setPixel9(point->u+0.5f,point->v+0.5f,makeRainbow3B(point->iR*fac));
+			iRImg.setPixel1(point->u+0.5f,point->v+0.5f,makeRainbow3B(point->iR*fac));
 	}
-
 
 	//IOWrap::displayImage("idepth-R", &iRImg, false);
     for(IOWrap::Output3DWrapper* ow : wraps)
