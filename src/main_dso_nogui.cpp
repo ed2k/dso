@@ -47,7 +47,7 @@
 
 
 
-#include "IOWrapper/nogui/PangolinDSOViewer.h"
+#include "IOWrapper/nogui/TextDSOViewer.h"
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
 
 
@@ -373,10 +373,10 @@ int main( int argc, char** argv )
 	fullSystem->setGammaFunction(reader->getPhotometricGamma());
 	fullSystem->linearizeOperation = (playbackSpeed==0);
 
-    IOWrap::PangolinDSOViewer* viewer = 0;
+    IOWrap::TextDSOViewer* viewer = 0;
 	//if(!disableAllDisplay)
     {
-        viewer = new IOWrap::PangolinDSOViewer(wG[0],hG[0], false);
+        viewer = new IOWrap::TextDSOViewer(wG[0],hG[0], false);
         fullSystem->outputWrapper.push_back(viewer);
     }
 

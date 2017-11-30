@@ -2,7 +2,7 @@
 */
 
 
-#include "PangolinDSOViewer.h"
+#include "TextDSOViewer.h"
 #include "KeyFrameDisplay.h"
 
 #include "util/settings.h"
@@ -16,7 +16,7 @@ namespace dso
 namespace IOWrap
 {
 
-PangolinDSOViewer::PangolinDSOViewer(int w, int h, bool startRunThread)
+TextDSOViewer::TextDSOViewer(int w, int h, bool startRunThread)
 {
 	this->w = w;
 	this->h = h;
@@ -42,17 +42,17 @@ PangolinDSOViewer::PangolinDSOViewer(int w, int h, bool startRunThread)
 	needReset = false;
 
     if(startRunThread)
-        runThread = boost::thread(&PangolinDSOViewer::run, this);
+        runThread = boost::thread(&TextDSOViewer::run, this);
 }
 
 
-PangolinDSOViewer::~PangolinDSOViewer()
+TextDSOViewer::~TextDSOViewer()
 {
 	close();
 	runThread.join();
 }
 
-void PangolinDSOViewer::printPC() {
+void TextDSOViewer::printPC() {
 	for(KeyFrameDisplay* fh : keyframes)
 	{
         printf("kfd %d ", fh->id);
@@ -61,7 +61,7 @@ void PangolinDSOViewer::printPC() {
 	}
 }
 
-void PangolinDSOViewer::run()
+void TextDSOViewer::run()
 {
 	const int UI_WIDTH = 180;
 
@@ -104,28 +104,28 @@ void PangolinDSOViewer::run()
 		}
 	}
 
-	printf("QUIT Pangolin thread!\n");
+	printf("QUIT Text thread!\n");
 	//exit(1);
 }
 
 
-void PangolinDSOViewer::close()
+void TextDSOViewer::close()
 {
 	running = false;
 }
 
-void PangolinDSOViewer::join()
+void TextDSOViewer::join()
 {
 	runThread.join();
-	printf("JOINED Pangolin thread!\n");
+	printf("JOINED Text thread!\n");
 }
 
-void PangolinDSOViewer::reset()
+void TextDSOViewer::reset()
 {
 	needReset = true;
 }
 
-void PangolinDSOViewer::reset_internal()
+void TextDSOViewer::reset_internal()
 {
 	model3DMutex.lock();
 	for(size_t i=0; i<keyframes.size();i++) delete keyframes[i];
@@ -146,7 +146,7 @@ void PangolinDSOViewer::reset_internal()
 }
 
 
-void PangolinDSOViewer::drawConstraints()
+void TextDSOViewer::drawConstraints()
 {
 	if(settings_showAllConstraints)
 	{
@@ -206,7 +206,7 @@ void PangolinDSOViewer::drawConstraints()
 	}
 }
 
-void PangolinDSOViewer::publishGraph(const std::map<uint64_t,Eigen::Vector2i> &connectivity)
+void TextDSOViewer::publishGraph(const std::map<uint64_t,Eigen::Vector2i> &connectivity)
 {
     if(!setting_render_display3D) return;
     if(disableAllDisplay) return;
@@ -250,7 +250,7 @@ void PangolinDSOViewer::publishGraph(const std::map<uint64_t,Eigen::Vector2i> &c
 	model3DMutex.unlock();
 }
 
-void PangolinDSOViewer::publishKeyframes(
+void TextDSOViewer::publishKeyframes(
 		std::vector<FrameHessian*> &frames,
 		bool final,
 		CalibHessian* HCalib)
@@ -273,7 +273,7 @@ void PangolinDSOViewer::publishKeyframes(
     printf("key-frame \n");
 }
 
-void PangolinDSOViewer::publishCamPose(FrameShell* frame,
+void TextDSOViewer::publishCamPose(FrameShell* frame,
 		CalibHessian* HCalib)
 {
     if(!setting_render_display3D) return;
@@ -292,7 +292,7 @@ void PangolinDSOViewer::publishCamPose(FrameShell* frame,
 	allFramePoses.push_back(frame->camToWorld.translation().cast<float>());
 }
 
-void PangolinDSOViewer::pushLiveFrame(FrameHessian* image)
+void TextDSOViewer::pushLiveFrame(FrameHessian* image)
 {
 	if(!setting_render_displayVideo) return;
     if(disableAllDisplay) return;
@@ -308,12 +308,12 @@ void PangolinDSOViewer::pushLiveFrame(FrameHessian* image)
 	videoImgChanged=true;
 }
 
-bool PangolinDSOViewer::needPushDepthImage()
+bool TextDSOViewer::needPushDepthImage()
 {
     return setting_render_displayDepth;
 }
 
-void PangolinDSOViewer::pushDepthImage(MinimalImageB3* image)
+void TextDSOViewer::pushDepthImage(MinimalImageB3* image)
 {
 
     if(!setting_render_displayDepth) return;

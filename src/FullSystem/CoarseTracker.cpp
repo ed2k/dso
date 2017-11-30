@@ -200,7 +200,7 @@ void CoarseTracker::makeCoarseDepthL0(std::vector<FrameHessian*> frameHessians)
 			float* weightSumsl_bak = weightSums_bak[lvl];
 			memcpy(weightSumsl_bak, weightSumsl, w[lvl]*h[lvl]*sizeof(float));
 			float* idepthl = idepth[lvl];	// dotnt need to make a temp copy of depth, since I only
-											// read values with weightSumsl>0, and write ones with weightSumsl<=0.
+			// read values with weightSumsl>0, and write ones with weightSumsl<=0.
 			for(int i=w[lvl];i<wh;i++)
 			{
 				if(weightSumsl_bak[i] <= 0)
@@ -271,8 +271,6 @@ void CoarseTracker::makeCoarseDepthL0(std::vector<FrameHessian*> frameHessians)
 					lpc_idepth[lpc_n] = idepthl[i];
 					lpc_color[lpc_n] = dIRefl[i][0];
 
-
-
 					if(!std::isfinite(lpc_color[lpc_n]) || !(idepthl[i]>0))
 					{
 						idepthl[i] = -1;
@@ -290,8 +288,6 @@ void CoarseTracker::makeCoarseDepthL0(std::vector<FrameHessian*> frameHessians)
 	}
 
 }
-
-
 
 void CoarseTracker::calcGSSSE(int lvl, Mat88 &H_out, Vec8 &b_out, const SE3 &refToNew, AffLight aff_g2l)
 {
@@ -445,14 +441,11 @@ Vec6 CoarseTracker::calcRes(int lvl, const SE3 &refToNew, AffLight aff_g2l, floa
 
 		if(!(Ku > 2 && Kv > 2 && Ku < wl-3 && Kv < hl-3 && new_idepth > 0)) continue;
 
-
-
 		float refColor = lpc_color[i];
         Vec3f hitColor = getInterpolatedElement33(dINewl, Ku, Kv, wl);
         if(!std::isfinite((float)hitColor[0])) continue;
         float residual = hitColor[0] - (float)(affLL[0] * refColor + affLL[1]);
         float hw = fabs(residual) < setting_huberTH ? 1 : setting_huberTH / fabs(residual);
-
 
 		if(fabs(residual) > cutoffTH)
 		{
@@ -801,8 +794,10 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt,
 			}
         //IOWrap::displayImage("coarseDepth LVL0", &mf, false);
 
-        for(IOWrap::Output3DWrapper* ow : wraps)
+        for(IOWrap::Output3DWrapper* ow : wraps) {
             ow->pushDepthImage(&mf);
+            ow->pushResidualImage(&mf);
+        }
 
 		if(debugSaveImages)
 		{
@@ -847,10 +842,6 @@ CoarseDistanceMap::~CoarseDistanceMap()
 	delete[] coarseProjectionGridNum;
 }
 
-
-
-
-
 void CoarseDistanceMap::makeDistanceMap(
 		std::vector<FrameHessian*> frameHessians,
 		FrameHessian* frame)
@@ -888,8 +879,6 @@ void CoarseDistanceMap::makeDistanceMap(
 
 	growDistBFS(numItems);
 }
-
-
 
 
 void CoarseDistanceMap::makeInlierVotes(std::vector<FrameHessian*> frameHessians)
@@ -1003,8 +992,6 @@ void CoarseDistanceMap::addIntoDistFinal(int u, int v)
 	fwdWarpedIDDistFinal[u+w[1]*v] = 0;
 	growDistBFS(1);
 }
-
-
 
 void CoarseDistanceMap::makeK(CalibHessian* HCalib)
 {

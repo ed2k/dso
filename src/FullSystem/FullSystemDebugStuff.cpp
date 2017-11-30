@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -30,7 +30,7 @@
  */
 
 #include "FullSystem/FullSystem.h"
- 
+
 #include "stdio.h"
 #include "util/globalFuncs.h"
 #include <Eigen/LU>
@@ -82,7 +82,6 @@ namespace dso
 				}
 			}
 
-
 			for(PointHessian* ph : f->pointHessians)
 			{
 				assert(ph->status == PointHessian::ACTIVE);
@@ -93,7 +92,6 @@ namespace dso
 					f->debugImage->setPixel9(ph->u+0.5, ph->v+0.5, makeRainbow3B(ph->idepth_scaled));
 				}
 			}
-
 
 			char buf[100];
 			snprintf(buf, 100, "IMG %d", idx);
@@ -111,9 +109,6 @@ namespace dso
 		if(disableAllDisplay) return;
 		if(!setting_render_renderWindowFrames) return;
 		std::vector<MinimalImageB3* > images;
-
-
-
 
 		float minID=0, maxID=0;
 		if((int)(freeDebugParam5+0.5f) == 7 || (debugSaveImages&&false))
@@ -135,17 +130,14 @@ namespace dso
 			minID = allID[(int)(n*0.05)];
 			maxID = allID[(int)(n*0.95)];
 
-
 			// slowly adapt: change by maximum 10% of old span.
 			float maxChange = 0.1*(maxIdJetVisDebug - minIdJetVisDebug);
 			if(maxIdJetVisDebug < 0  || minIdJetVisDebug < 0 ) maxChange = 1e5;
-
 
 			if(minID < minIdJetVisDebug - maxChange)
 				minID = minIdJetVisDebug - maxChange;
 			if(minID > minIdJetVisDebug + maxChange)
 				minID = minIdJetVisDebug + maxChange;
-
 
 			if(maxID < maxIdJetVisDebug - maxChange)
 				maxID = maxIdJetVisDebug - maxChange;
@@ -154,7 +146,6 @@ namespace dso
 
 			maxIdJetVisDebug = maxID;
 			minIdJetVisDebug = minID;
-
 		}
 
 

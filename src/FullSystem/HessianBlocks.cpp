@@ -59,17 +59,13 @@ PointHessian::PointHessian(const ImmaturePoint* const rawPoint, CalibHessian* Hc
 	energyTH = rawPoint->energyTH;
 
 	efPoint=0;
-
-
 }
-
 
 void PointHessian::release()
 {
 	for(unsigned int i=0;i<residuals.size();i++) delete residuals[i];
 	residuals.clear();
 }
-
 
 void FrameHessian::setStateZero(const Vec10 &state_zero)
 {
@@ -117,7 +113,6 @@ void FrameHessian::release()
 	for(unsigned int i=0;i<pointHessiansOut.size();i++) delete pointHessiansOut[i];
 	for(unsigned int i=0;i<immaturePoints.size();i++) delete immaturePoints[i];
 
-
 	pointHessians.clear();
 	pointHessiansMarginalized.clear();
 	pointHessiansOut.clear();
@@ -129,14 +124,12 @@ void FrameHessian::release()
  */
 void FrameHessian::makeImages(float* color, CalibHessian* HCalib)
 {
-
 	for(int i=0;i<pyrLevelsUsed;i++)
 	{
 		dIp[i] = new Eigen::Vector3f[wG[i]*hG[i]];
 		absSquaredGrad[i] = new float[wG[i]*hG[i]];
 	}
 	dI = dIp[0];
-
 
 	// make d0
 	int w=wG[0];
@@ -156,8 +149,6 @@ void FrameHessian::makeImages(float* color, CalibHessian* HCalib)
 			int wlm1 = wG[lvlm1];
 			Eigen::Vector3f* dI_lm = dIp[lvlm1];
 
-
-
 			for(int y=0;y<hl;y++)
 				for(int x=0;x<wl;x++)
 				{
@@ -173,13 +164,11 @@ void FrameHessian::makeImages(float* color, CalibHessian* HCalib)
 			float dx = 0.5f*(dI_l[idx+1][0] - dI_l[idx-1][0]);
 			float dy = 0.5f*(dI_l[idx+wl][0] - dI_l[idx-wl][0]);
 
-
 			if(!std::isfinite(dx)) dx=0;
 			if(!std::isfinite(dy)) dy=0;
 
 			dI_l[idx][1] = dx;
 			dI_l[idx][2] = dy;
-
 
 			dabs_l[idx] = dx*dx+dy*dy;
 

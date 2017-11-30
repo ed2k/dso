@@ -358,7 +358,6 @@ void FullSystem::loadSateBackup()
 		for(PointHessian* ph : fh->pointHessians)
 		{
 			ph->setIdepth(ph->idepth_backup);
-
             ph->setIdepthZero(ph->idepth_backup);
 		}
 	}

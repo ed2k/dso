@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -74,6 +74,7 @@ public:
 
 	virtual void pushLiveFrame(FrameHessian* image);
 	virtual void pushDepthImage(MinimalImageB3* image);
+	virtual void pushResidualImage(MinimalImageB3* image);
     virtual bool needPushDepthImage();
 
 	virtual void join();

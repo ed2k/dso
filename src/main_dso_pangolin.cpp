@@ -359,7 +359,6 @@ int main( int argc, char** argv )
 	// hook crtl+C.
 	boost::thread exThread = boost::thread(exitThread);
 
-
 	ImageFolderReader* reader = new ImageFolderReader(source, calib, gammaCalib, vignette);
 	reader->setGlobalCalibration();
 
@@ -382,11 +381,9 @@ int main( int argc, char** argv )
 		linc = -1;
 	}
 
-
 	FullSystem* fullSystem = new FullSystem();
 	fullSystem->setGammaFunction(reader->getPhotometricGamma());
 	fullSystem->linearizeOperation = (playbackSpeed==0);
-
 
     IOWrap::PangolinDSOViewer* viewer = 0;
 	if(!disableAllDisplay)
@@ -447,13 +444,11 @@ int main( int argc, char** argv )
 
             int i = idsToPlay[ii];
 
-
             ImageAndExposure* img;
             if(preload)
                 img = preloadedImages[ii];
             else
                 img = reader->getImage(i);
-
 
             bool skipFrame=false;
             if(playbackSpeed!=0)

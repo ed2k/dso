@@ -80,7 +80,7 @@ else ()
 endif ()
 	set(dso_nogui_SOURCE_FILES 
 	  ${PROJECT_SOURCE_DIR}/src/IOWrapper/nogui/KeyFrameDisplay.cpp
-	  ${PROJECT_SOURCE_DIR}/src/IOWrapper/nogui/PangolinDSOViewer.cpp)
+	  ${PROJECT_SOURCE_DIR}/src/IOWrapper/nogui/TextDSOViewer.cpp)
 
 # decide if we have openCV
 if (OpenCV_FOUND)

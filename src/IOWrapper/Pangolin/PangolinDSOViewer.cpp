@@ -499,6 +499,7 @@ bool PangolinDSOViewer::needPushDepthImage()
 {
     return setting_render_displayDepth;
 }
+
 void PangolinDSOViewer::pushDepthImage(MinimalImageB3* image)
 {
     if(!setting_render_displayDepth) return;
@@ -514,6 +515,15 @@ void PangolinDSOViewer::pushDepthImage(MinimalImageB3* image)
 
 	memcpy(internalKFImg->data, image->data, w*h*3);
 	kfImgChanged=true;
+}
+
+void PangolinDSOViewer::pushResidualImage(MinimalImageB3* image)
+{
+    if(!setting_render_displayDepth) return;
+    if(disableAllDisplay) return;
+
+	memcpy(internalResImg->data, image->data, w*h*3);
+	resImgChanged=true;
 }
 
 }

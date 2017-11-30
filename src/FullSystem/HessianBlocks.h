@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -25,10 +25,10 @@
 #pragma once
 #define MAX_ACTIVE_FRAMES 100
 
- 
+
 #include "util/globalCalib.h"
 #include "vector"
- 
+
 #include <iostream>
 #include <fstream>
 #include "util/NumType.h"
@@ -103,10 +103,6 @@ struct FrameFramePrecalc
 	void set(FrameHessian* host, FrameHessian* target, CalibHessian* HCalib);
 };
 
-
-
-
-
 struct FrameHessian
 {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
@@ -119,11 +115,6 @@ struct FrameHessian
 	Eigen::Vector3f* dI;				 // trace, fine tracking. Used for direction select (not for gradient histograms etc.)
 	Eigen::Vector3f* dIp[PYR_LEVELS];	 // coarse tracking / coarse initializer. NAN in [0] only.
 	float* absSquaredGrad[PYR_LEVELS];  // only used for pixel select (histograms etc.). no NAN.
-
-
-
-
-
 
 	int frameID;						// incremental ID for keyframes only!
 	static int instanceCounter;
@@ -139,7 +130,6 @@ struct FrameHessian
 	std::vector<PointHessian*> pointHessiansMarginalized;	// contains all MARGINALIZED points (= fully marginalized, usually because point went OOB.)
 	std::vector<PointHessian*> pointHessiansOut;		// contains all OUTLIER points (= discarded.).
 	std::vector<ImmaturePoint*> immaturePoints;		// contains all OUTLIER points (= discarded.).
-
 
 	Mat66 nullspaces_pose;
 	Mat42 nullspaces_affine;
@@ -161,19 +151,15 @@ struct FrameHessian
     EIGEN_STRONG_INLINE const Vec10 &get_state_scaled() const {return state_scaled;}
     EIGEN_STRONG_INLINE const Vec10 get_state_minus_stateZero() const {return get_state() - get_state_zero();}
 
-
 	// precalc values
 	SE3 PRE_worldToCam;
 	SE3 PRE_camToWorld;
 	std::vector<FrameFramePrecalc,Eigen::aligned_allocator<FrameFramePrecalc>> targetPrecalc;
 	MinimalImageB3* debugImage;
 
-
     inline Vec6 w2c_leftEps() const {return get_state_scaled().head<6>();}
     inline AffLight aff_g2l() const {return AffLight(get_state_scaled()[6], get_state_scaled()[7]);}
     inline AffLight aff_g2l_0() const {return AffLight(get_state_zero()[6]*SCALE_A, get_state_zero()[7]*SCALE_B);}
-
-
 
 	void setStateZero(const Vec10 &state_zero);
 	inline void setState(const Vec10 &state)
@@ -214,8 +200,6 @@ struct FrameHessian
 		setStateZero(state);
 	};
 
-
-
 	inline void setEvalPT_scaled(const SE3 &worldToCam_evalPT, const AffLight &aff_g2l)
 	{
 		Vec10 initial_state = Vec10::Zero();
@@ -239,10 +223,9 @@ struct FrameHessian
 
 		}
 
-
-
 		if(debugImage != 0) delete debugImage;
 	};
+
 	inline FrameHessian()
 	{
 		instanceCounter++;
@@ -251,11 +234,8 @@ struct FrameHessian
 		efFrame = 0;
 		frameEnergyTH = 8*8*patternNum;
 
-
-
 		debugImage=0;
 	};
-
 
     void makeImages(float* color, CalibHessian* HCalib);
 
@@ -410,8 +390,6 @@ struct PointHessian
 	float color[MAX_RES_PER_POINT];			// colors in host frame
 	float weights[MAX_RES_PER_POINT];		// host-weights for respective residuals.
 
-
-
 	float u,v;
 	int idx;
 	float energyTH;
@@ -438,7 +416,6 @@ struct PointHessian
 
     inline void setPointStatus(PtStatus s) {status=s;}
 
-
 	inline void setIdepth(float idepth) {
 		this->idepth = idepth;
 		this->idepth_scaled = SCALE_IDEPTH * idepth;
@@ -453,19 +430,16 @@ struct PointHessian
 		nullspaces_scale = -(idepth*1.001 - idepth/1.001)*500;
     }
 
-
 	std::vector<PointFrameResidual*> residuals;					// only contains good residuals (not OOB and not OUTLIER). Arbitrary order.
 	std::pair<PointFrameResidual*, ResState> lastResiduals[2]; 	// contains information about residuals to the last two (!) frames. ([0] = latest, [1] = the one before).
-
 
 	void release();
 	PointHessian(const ImmaturePoint* const rawPoint, CalibHessian* Hcalib);
     inline ~PointHessian() {assert(efPoint==0); release(); instanceCounter--;}
 
-
-	inline bool isOOB(const std::vector<FrameHessian*>& toKeep, const std::vector<FrameHessian*>& toMarg) const
+	inline bool
+    isOOB(const std::vector<FrameHessian*>& toKeep, const std::vector<FrameHessian*>& toMarg) const
 	{
-
 		int visInToMarg = 0;
 		for(PointFrameResidual* r : residuals)
 		{
@@ -478,23 +452,17 @@ struct PointHessian
 				(int)residuals.size()-visInToMarg < setting_minGoodActiveResForMarg)
 			return true;
 
-
-
-
-
 		if(lastResiduals[0].second == ResState::OOB) return true;
 		if(residuals.size() < 2) return false;
 		if(lastResiduals[0].second == ResState::OUTLIER && lastResiduals[1].second == ResState::OUTLIER) return true;
 		return false;
 	}
 
-
 	inline bool isInlierNew()
 	{
 		return (int)residuals.size() >= setting_minGoodActiveResForMarg
                     && numGoodResiduals >= setting_minGoodResForMarg;
 	}
-
 };
 
 

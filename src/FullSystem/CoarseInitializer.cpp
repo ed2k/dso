@@ -292,8 +292,10 @@ void CoarseInitializer::debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrap
 	}
 
 	//IOWrap::displayImage("idepth-R", &iRImg, false);
-    for(IOWrap::Output3DWrapper* ow : wraps)
+    for(IOWrap::Output3DWrapper* ow : wraps) {
         ow->pushDepthImage(&iRImg);
+        ow->pushResidualImage(&iRImg);
+    }
 }
 
 // calculates residual, Hessian and Hessian-block neede for re-substituting depth.

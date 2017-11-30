@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -30,7 +30,7 @@
  */
 
 #include "FullSystem/FullSystem.h"
- 
+
 #include "stdio.h"
 #include "util/globalFuncs.h"
 #include <Eigen/LU>
@@ -54,7 +54,6 @@ namespace dso
 {
 
 
-
 void FullSystem::flagFramesForMarginalization(FrameHessian* newFH)
 {
 	if(setting_minFrameAge > setting_maxFrames)
@@ -66,7 +65,6 @@ void FullSystem::flagFramesForMarginalization(FrameHessian* newFH)
 		}
 		return;
 	}
-
 
 	int flagged = 0;
 	// marginalize all frames that have not enough points.
@@ -146,20 +144,14 @@ void FullSystem::flagFramesForMarginalization(FrameHessian* newFH)
 //	printf("\n");
 }
 
-
-
-
 void FullSystem::marginalizeFrame(FrameHessian* frame)
 {
 	// marginalize or remove all this frames points.
-
 	assert((int)frame->pointHessians.size()==0);
-
 
 	ef->marginalizeFrame(frame->efFrame);
 
 	// drop all observations of existing points in that frame.
-
 	for(FrameHessian* fh : frameHessians)
 	{
 		if(fh==frame) continue;
@@ -176,7 +168,6 @@ void FullSystem::marginalizeFrame(FrameHessian* frame)
 					else if(ph->lastResiduals[1].first == r)
 						ph->lastResiduals[1].first=0;
 
-
 					if(r->host->frameID < r->target->frameID)
 						statistics_numForceDroppedResFwd++;
 					else
@@ -189,26 +180,18 @@ void FullSystem::marginalizeFrame(FrameHessian* frame)
 			}
 		}
 	}
-
-
-
     {
         std::vector<FrameHessian*> v;
         v.push_back(frame);
         for(IOWrap::Output3DWrapper* ow : outputWrapper)
             ow->publishKeyframes(v, true, &Hcalib);
     }
-
-
 	frame->shell->marginalizedAt = frameHessians.back()->shell->id;
 	frame->shell->movedByOpt = frame->w2c_leftEps().norm();
 
 	deleteOutOrder<FrameHessian>(frameHessians, frame);
 	for(unsigned int i=0;i<frameHessians.size();i++)
 		frameHessians[i]->idx = i;
-
-
-
 
 	setPrecalcValues();
 	ef->setAdjointsF(&Hcalib);

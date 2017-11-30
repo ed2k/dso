@@ -162,6 +162,7 @@ public:
          * Needs to prepare the depth image, so it is only called if [needPushDepthImage()] returned true.
          */
         virtual void pushDepthImage(MinimalImageB3* image) {}
+        virtual void pushResidualImage(MinimalImageB3* image) {}
         virtual bool needPushDepthImage() {return false;}
 
         /* Usage:
@@ -178,7 +179,6 @@ public:
 
         /* call on reset */
         virtual void reset() {}
-
 };
 
 }

@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -29,7 +29,7 @@
 #include "util/NumType.h"
 #include "util/globalCalib.h"
 #include "vector"
- 
+
 #include <iostream>
 #include <fstream>
 #include "util/NumType.h"
@@ -166,9 +166,6 @@ private:
 
 	CalibHessian Hcalib;
 
-
-
-
 	// opt single point
 	int optimizePoint(PointHessian* point, int minObs, bool flagOOB);
 	PointHessian* optimizeImmaturePoint(ImmaturePoint* point, int minObs, ImmaturePointTemporaryResidual* residuals);
@@ -186,13 +183,10 @@ private:
 	void initializeFromInitializer(FrameHessian* newFrame);
 	void flagFramesForMarginalization(FrameHessian* newFH);
 
-
 	void removeOutliers();
-
 
 	// set precalc values.
 	void setPrecalcValues();
-
 
 	// solce. eventually migrate to ef.
 	void solveSystem(int iteration, double lambda);
@@ -217,7 +211,6 @@ private:
 			std::vector<VecX> &nullspaces_affB);
 
 	void setNewFrameEnergyTH();
-
 
 	void printLogLine();
 	void printEvalLine();
@@ -245,18 +238,11 @@ private:
 	long int statistics_numMargResBwd;
 	float statistics_lastFineTrackRMSE;
 
-
-
-
-
-
-
 	// =================== changed by tracker-thread. protected by trackMutex ============
 	boost::mutex trackMutex;
 	std::vector<FrameShell*> allFrameHistory;
 	CoarseInitializer* coarseInitializer;
 	Vec5 lastCoarseRMSE;
-
 
 	// ================== changed by mapper-thread. protected by mapMutex ===============
 	boost::mutex mapMutex;
@@ -273,10 +259,7 @@ private:
 	std::vector<PointFrameResidual*> activeResiduals;
 	float currentMinActDist;
 
-
 	std::vector<float> allResVec;
-
-
 
 	// mutex etc. for tracker exchange.
 	boost::mutex coarseTrackerSwapMutex;			// if tracker sees that there is a new reference, tracker locks [coarseTrackerSwapMutex] and swaps the two.
@@ -285,20 +268,12 @@ private:
 	float minIdJetVisTracker, maxIdJetVisTracker;
 	float minIdJetVisDebug, maxIdJetVisDebug;
 
-
-
-
-
 	// mutex for camToWorl's in shells (these are always in a good configuration).
 	boost::mutex shellPoseMutex;
-
-
-
 /*
  * tracking always uses the newest KF as reference.
  *
  */
-
 	void makeKeyFrame( FrameHessian* fh);
 	void makeNonKeyFrame( FrameHessian* fh);
 	void deliverTrackedFrame(FrameHessian* fh, bool needKF);
