@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -23,8 +23,8 @@
 
 
 #include "FullSystem/PixelSelector2.h"
- 
-// 
+
+//
 
 
 
@@ -133,12 +133,8 @@ void PixelSelector::makeHists(const FrameHessian* const fh)
 			thsSmoothed[x+y*w32] = (sum/num) * (sum/num);
 
 		}
-
-
-
-
-
 }
+
 int PixelSelector::makeMaps(
 		const FrameHessian* const fh,
 		float* map_out, float density, int recursionsLeft, bool plot, float thFactor)
@@ -147,7 +143,6 @@ int PixelSelector::makeMaps(
 	float numWant=density;
 	float quotia;
 	int idealPotential = currentPotential;
-
 
 //	if(setting_pixelSelectionUseFast>0 && allowFast)
 //	{
@@ -173,10 +168,6 @@ int PixelSelector::makeMaps(
 //	}
 //	else
 	{
-
-
-
-
 		// the number of selected pixels behaves approximately as
 		// K / (pot+1)^2, where K is a scene-dependent constant.
 		// we will allow sub-selecting pixels by up to a quotia of 0.25, otherwise we will re-select.
@@ -224,7 +215,6 @@ int PixelSelector::makeMaps(
 	//				idealPotential);
 			currentPotential = idealPotential;
 			return makeMaps(fh,map_out, density, recursionsLeft-1, plot,thFactor);
-
 		}
 	}
 
@@ -256,12 +246,10 @@ int PixelSelector::makeMaps(
 //			100*numHaveSub/(float)(wG[0]*hG[0]));
 	currentPotential = idealPotential;
 
-
 	if(plot)
 	{
 		int w = wG[0];
 		int h = hG[0];
-
 
 		MinimalImageB3 img(w,h);
 
@@ -271,26 +259,23 @@ int PixelSelector::makeMaps(
 			if(c>255) c=255;
 			img.at(i) = Vec3b(c,c,c);
 		}
-		IOWrap::displayImage("Selector Image", &img);
+		//IOWrap::displayImage("Selector Image", &img);
 
 		for(int y=0; y<h;y++)
 			for(int x=0;x<w;x++)
 			{
 				int i=x+y*w;
 				if(map_out[i] == 1)
-					img.setPixelCirc(x,y,Vec3b(0,255,0));
+					img.setPixel1(x,y,Vec3b(0,255,0));
 				else if(map_out[i] == 2)
-					img.setPixelCirc(x,y,Vec3b(255,0,0));
+					img.setPixel1(x,y,Vec3b(255,0,0));
 				else if(map_out[i] == 4)
-					img.setPixelCirc(x,y,Vec3b(0,0,255));
+					img.setPixel1(x,y,Vec3b(0,0,255));
 			}
 		IOWrap::displayImage("Selector Pixels", &img);
 	}
-
 	return numHaveSub;
 }
-
-
 
 Eigen::Vector3i PixelSelector::select(const FrameHessian* const fh,
 		float* map_out, int pot, float thFactor)
@@ -302,12 +287,10 @@ Eigen::Vector3i PixelSelector::select(const FrameHessian* const fh,
 	float * mapmax1 = fh->absSquaredGrad[1];
 	float * mapmax2 = fh->absSquaredGrad[2];
 
-
 	int w = wG[0];
 	int w1 = wG[1];
 	int w2 = wG[2];
 	int h = hG[0];
-
 
 	const Vec2f directions[16] = {
 	         Vec2f(0,    1.0000),
@@ -329,11 +312,8 @@ Eigen::Vector3i PixelSelector::select(const FrameHessian* const fh,
 
 	memset(map_out,0,w*h*sizeof(PixelSelectorStatus));
 
-
-
 	float dw1 = setting_gradDownweightPerLevel;
 	float dw2 = dw1*dw1;
-
 
 	int n3=0, n2=0, n4=0;
 	for(int y4=0;y4<h;y4+=(4*pot)) for(int x4=0;x4<w;x4+=(4*pot))
@@ -368,11 +348,9 @@ Eigen::Vector3i PixelSelector::select(const FrameHessian* const fh,
 
 					if(xf<4 || xf>=w-5 || yf<4 || yf>h-4) continue;
 
-
 					float pixelTH0 = thsSmoothed[(xf>>5) + (yf>>5) * thsStep];
 					float pixelTH1 = pixelTH0*dw1;
 					float pixelTH2 = pixelTH1*dw2;
-
 
 					float ag0 = mapmax0[idx];
 					if(ag0 > pixelTH0*thFactor)
@@ -432,8 +410,6 @@ Eigen::Vector3i PixelSelector::select(const FrameHessian* const fh,
 			n4++;
 		}
 	}
-
-
 	return Eigen::Vector3i(n2,n3,n4);
 }
 

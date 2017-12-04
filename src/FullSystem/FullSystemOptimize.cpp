@@ -392,7 +392,6 @@ void FullSystem::printOptRes(const Vec3 &res, double resL, double resM, double r
 
 float FullSystem::optimize(int mnumOptIts)
 {
-
 	if(frameHessians.size() < 2) return 0;
 	if(frameHessians.size() < 3) mnumOptIts = 20;
 	if(frameHessians.size() < 4) mnumOptIts = 15;
@@ -421,7 +420,6 @@ float FullSystem::optimize(int mnumOptIts)
     if(!setting_debugout_runquiet)
         printf("OPTIMIZE %d pts, %d active res, %d lin res!\n",ef->nPoints,(int)activeResiduals.size(), numLRes);
 
-
 	Vec3 lastEnergy = linearizeAll(false);
 	double lastEnergyL = calcLEnergy();
 	double lastEnergyM = calcMEnergy();
@@ -430,7 +428,6 @@ float FullSystem::optimize(int mnumOptIts)
 		treadReduce.reduce(boost::bind(&FullSystem::applyRes_Reductor, this, true, _1, _2, _3, _4), 0, activeResiduals.size(), 50);
 	else
 		applyRes_Reductor(true,0,activeResiduals.size(),0,0);
-
 
     if(!setting_debugout_runquiet)
     {
@@ -485,7 +482,6 @@ float FullSystem::optimize(int mnumOptIts)
 		if(setting_forceAceptStep || (newEnergy[0] +  newEnergy[1] +  newEnergyL + newEnergyM <
 				lastEnergy[0] + lastEnergy[1] + lastEnergyL + lastEnergyM))
 		{
-
 			if(multiThreading)
 				treadReduce.reduce(boost::bind(&FullSystem::applyRes_Reductor, this, true, _1, _2, _3, _4), 0, activeResiduals.size(), 50);
 			else

@@ -165,7 +165,6 @@ void KeyFrameDisplay::setFromKF(FrameHessian* fh, CalibHessian* HCalib)
 	needRefresh=true;
 }
 
-
 KeyFrameDisplay::~KeyFrameDisplay()
 {
 	if(originalInputSparse != 0)
@@ -249,7 +248,6 @@ bool KeyFrameDisplay::refreshPC(bool canRefresh, float scaledTH, float absTH, in
             //for(int i=0;i<3;i++)printf("%f ", tmpVertexBuffer[vertexBufferNumPoints][i]);
             //printf("\n");
 
-
 			if(my_displayMode==0)
 			{
 				if(originalInputSparse[i].status==0)
@@ -317,11 +315,8 @@ bool KeyFrameDisplay::refreshPC(bool canRefresh, float scaledTH, float absTH, in
 	delete[] tmpColorBuffer;
 	delete[] tmpVertexBuffer;
 
-
 	return true;
 }
-
-
 
 void KeyFrameDisplay::drawCam(float lineWidth, float* color, float sizeFactor)
 {
@@ -365,6 +360,16 @@ void KeyFrameDisplay::drawCam(float lineWidth, float* color, float sizeFactor)
 		glVertex3f(sz*(0-cx)/fx,sz*(0-cy)/fy,sz);
 		glVertex3f(sz*(width-1-cx)/fx,sz*(0-cy)/fy,sz);
 
+		glColor3f(1,0,0);// red
+		glVertex3f(0,0,0);
+		glVertex3f(1,0,0);
+		glColor3f(0,1,0); // green
+		glVertex3f(0,0,0);
+		glVertex3f(0,1,0);
+		glColor3f(0,0,1); // blue
+		glVertex3f(0,0,0);
+		glVertex3f(0,0,1);
+
 		glEnd();
 	glPopMatrix();
 }
@@ -372,10 +377,8 @@ void KeyFrameDisplay::drawCam(float lineWidth, float* color, float sizeFactor)
 
 void KeyFrameDisplay::drawPC(float pointSize)
 {
-
 	if(!bufferValid || numGLBufferGoodPoints==0)
 		return;
-
 
 	glDisable(GL_LIGHTING);
 
@@ -385,7 +388,6 @@ void KeyFrameDisplay::drawPC(float pointSize)
 		glMultMatrixf((GLfloat*)m.data());
 
 		glPointSize(pointSize);
-
 
 		colorBuffer.Bind();
 		glColorPointer(colorBuffer.count_per_element, colorBuffer.datatype, 0, 0);

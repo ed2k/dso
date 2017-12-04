@@ -524,8 +524,6 @@ void FullSystem::activatePointsMT()
         printf("SPARSITY:  MinActDist %f (need %d points, have %d points)!\n",
                 currentMinActDist, (int)(setting_desiredPointDensity), ef->nPoints);
 
-
-
 	FrameHessian* newestHs = frameHessians.back();
 
 	// make dist map.
@@ -536,7 +534,6 @@ void FullSystem::activatePointsMT()
 
 	std::vector<ImmaturePoint*> toOptimize; toOptimize.reserve(20000);
 
-
 	for(FrameHessian* host : frameHessians)		// go through all active frames
 	{
 		if(host == newestHs) continue;
@@ -544,7 +541,6 @@ void FullSystem::activatePointsMT()
 		SE3 fhToNew = newestHs->PRE_worldToCam * host->PRE_camToWorld;
 		Mat33f KRKi = (coarseDistanceMap->K[1] * fhToNew.rotationMatrix().cast<float>() * coarseDistanceMap->Ki[0]);
 		Vec3f Kt = (coarseDistanceMap->K[1] * fhToNew.translation().cast<float>());
-
 
 		for(unsigned int i=0;i<host->immaturePoints.size();i+=1)
 		{
@@ -570,7 +566,6 @@ void FullSystem::activatePointsMT()
 							&& ph->quality > setting_minTraceQuality
 							&& (ph->idepth_max+ph->idepth_min) > 0;
 
-
 			// if I cannot activate the point, skip it. Maybe also delete it.
 			if(!canActivate)
 			{
@@ -584,7 +579,6 @@ void FullSystem::activatePointsMT()
 //				immature_notReady_skipped++;
 				continue;
 			}
-
 
 			// see if we need to activate point due to distance map.
 			Vec3f ptp = KRKi * Vec3f(ph->u, ph->v, 1) + Kt*(0.5f*(ph->idepth_max+ph->idepth_min));
@@ -610,15 +604,14 @@ void FullSystem::activatePointsMT()
 		}
 	}
 
-
 //	printf("ACTIVATE: %d. (del %d, notReady %d, marg %d, good %d, marg-skip %d)\n",
 //			(int)toOptimize.size(), immature_deleted, immature_notReady, immature_needMarg, immature_want, immature_margskip);
 
 	std::vector<PointHessian*> optimized; optimized.resize(toOptimize.size());
 
 	if(multiThreading)
-		treadReduce.reduce(boost::bind(&FullSystem::activatePointsMT_Reductor, this, &optimized, &toOptimize, _1, _2, _3, _4), 0, toOptimize.size(), 50);
-
+		treadReduce.reduce(boost::bind(&FullSystem::activatePointsMT_Reductor, this, &optimized,
+                    &toOptimize, _1, _2, _3, _4), 0, toOptimize.size(), 50);
 	else
 		activatePointsMT_Reductor(&optimized, &toOptimize, 0, toOptimize.size(), 0, 0);
 
@@ -649,7 +642,6 @@ void FullSystem::activatePointsMT()
 		}
 	}
 
-
 	for(FrameHessian* host : frameHessians)
 	{
 		for(int i=0;i<(int)host->immaturePoints.size();i++)
@@ -662,14 +654,7 @@ void FullSystem::activatePointsMT()
 			}
 		}
 	}
-
-
 }
-
-
-
-
-
 
 void FullSystem::activatePointsOldFirst()
 {
@@ -691,8 +676,6 @@ void FullSystem::flagPointsForRemoval()
 		for(int i=0; i< (int)frameHessians.size();i++)
 			if(frameHessians[i]->flaggedForMarginalization) fhsToMargPoints.push_back(frameHessians[i]);
 	}
-
-
 
 	//ef->setAdjointsF();
 	//ef->setDeltaF(&Hcalib);
@@ -742,22 +725,16 @@ void FullSystem::flagPointsForRemoval()
 						ph->efPoint->stateFlag = EFPointStatus::PS_DROP;
 						host->pointHessiansOut.push_back(ph);
 					}
-
-
 				}
 				else
 				{
 					host->pointHessiansOut.push_back(ph);
 					ph->efPoint->stateFlag = EFPointStatus::PS_DROP;
-
-
 					//printf("drop point in frame %d (%d goodRes, %d activeRes)\n", ph->host->idx, ph->numGoodResiduals, (int)ph->residuals.size());
 				}
-
 				host->pointHessians[i]=0;
 			}
 		}
-
 
 		for(int i=0;i<(int)host->pointHessians.size();i++)
 		{
@@ -1010,7 +987,6 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 	// =========================== Flag Frames to be Marginalized. =========================
 	flagFramesForMarginalization(fh);
 
-
 	// =========================== add New Frame to Hessian Struct. =========================
 	fh->idx = frameHessians.size();
 	frameHessians.push_back(fh);
@@ -1196,13 +1172,13 @@ void FullSystem::makeNewTraces(FrameHessian* newFrame, float* gtDepth)
 {
 	pixelSelector->allowFast = true;
 	//int numPointsTotal = makePixelStatus(newFrame->dI, selectionMap, wG[0], hG[0], setting_desiredDensity);
-	int numPointsTotal = pixelSelector->makeMaps(newFrame, selectionMap,setting_desiredImmatureDensity);
+	int numPointsTotal = pixelSelector->makeMaps(newFrame, selectionMap,
+            setting_desiredImmatureDensity /* debug plot ,1,true,1*/ );
 
 	newFrame->pointHessians.reserve(numPointsTotal*1.2f);
 	//fh->pointHessiansInactive.reserve(numPointsTotal*1.2f);
 	newFrame->pointHessiansMarginalized.reserve(numPointsTotal*1.2f);
 	newFrame->pointHessiansOut.reserve(numPointsTotal*1.2f);
-
 
 	for(int y=patternPadding+1;y<hG[0]-patternPadding-2;y++)
 	for(int x=patternPadding+1;x<wG[0]-patternPadding-2;x++)
@@ -1213,13 +1189,9 @@ void FullSystem::makeNewTraces(FrameHessian* newFrame, float* gtDepth)
 		ImmaturePoint* impt = new ImmaturePoint(x,y,newFrame, selectionMap[i], &Hcalib);
 		if(!std::isfinite(impt->energyTH)) delete impt;
 		else newFrame->immaturePoints.push_back(impt);
-
 	}
 	//printf("MADE %d IMMATURE POINTS!\n", (int)newFrame->immaturePoints.size());
-
 }
-
-
 
 void FullSystem::setPrecalcValues()
 {

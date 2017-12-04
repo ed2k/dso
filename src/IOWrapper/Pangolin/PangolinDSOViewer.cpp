@@ -172,7 +172,7 @@ void PangolinDSOViewer::run()
 						this->settings_pointCloudMode, this->settings_minRelBS, this->settings_sparsity));
 				fh->drawPC(1);
 			}
-			if(this->settings_showCurrentCamera) currentCam->drawCam(2,0,0.2);
+			if(this->settings_showCurrentCamera) currentCam->drawCam(1,0,0.1);
 			drawConstraints();
 			lk3d.unlock();
 		}
@@ -366,12 +366,11 @@ void PangolinDSOViewer::drawConstraints()
 	{
 		float colorRed[3] = {1,0,0};
 		glColor3f(colorRed[0],colorRed[1],colorRed[2]);
-		glLineWidth(3);
+		glLineWidth(1);
 
 		glBegin(GL_LINE_STRIP);
-		for(unsigned int i=0;i<keyframes.size();i++)
-		{
-			glVertex3f((float)keyframes[i]->camToWorld.translation()[0],
+        for(unsigned int i=0;i<keyframes.size();i++) {
+        	glVertex3f((float)keyframes[i]->camToWorld.translation()[0],
 					(float)keyframes[i]->camToWorld.translation()[1],
 					(float)keyframes[i]->camToWorld.translation()[2]);
 		}
@@ -382,14 +381,33 @@ void PangolinDSOViewer::drawConstraints()
 	{
 		float colorGreen[3] = {0,1,0};
 		glColor3f(colorGreen[0],colorGreen[1],colorGreen[2]);
-		glLineWidth(3);
+		glLineWidth(1);
 
 		glBegin(GL_LINE_STRIP);
-		for(unsigned int i=0;i<allFramePoses.size();i++)
-		{
+		for(unsigned int i=0;i<allFramePoses.size();i++) {
 			glVertex3f((float)allFramePoses[i][0],
-					(float)allFramePoses[i][1],
+					(float)allFramePoses[i][1]+0.1,
 					(float)allFramePoses[i][2]);
+        }
+		glEnd();
+		glBegin(GL_LINE_STRIP);
+		for(unsigned int i=0;i<allFramePoses.size();i++) {
+            float y = allFramePoses[i][1];
+			glVertex3f((float)allFramePoses[i][0], 1,
+					(float)allFramePoses[i][2]);
+        }
+		glEnd();
+		glBegin(GL_LINE_STRIP);
+		for(unsigned int i=0;i<allFramePoses.size();i++) {
+            float y = allFramePoses[i][1];
+			glVertex3f((float)allFramePoses[i][0],y,1);
+		}
+		glEnd();
+		glBegin(GL_LINE_STRIP);
+		for(unsigned int i=0;i<allFramePoses.size();i++) {
+            float y = allFramePoses[i][1];
+            float z = allFramePoses[i][2];
+			glVertex3f(1,y,z);
 		}
 		glEnd();
 	}

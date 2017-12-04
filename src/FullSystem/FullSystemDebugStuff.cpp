@@ -100,7 +100,6 @@ namespace dso
 		}
 
 		IOWrap::waitKey(0);
-
 	}
 
 

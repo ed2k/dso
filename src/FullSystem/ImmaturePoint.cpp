@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -30,9 +30,9 @@
 namespace dso
 {
 ImmaturePoint::ImmaturePoint(int u_, int v_, FrameHessian* host_, float type, CalibHessian* HCalib)
-: u(u_), v(v_), host(host_), my_type(type), idepth_min(0), idepth_max(NAN), lastTraceStatus(IPS_UNINITIALIZED)
+: u(u_), v(v_), host(host_), my_type(type), idepth_min(0), idepth_max(NAN),
+    lastTraceStatus(IPS_UNINITIALIZED)
 {
-
 	gradH.setZero();
 
 	for(int idx=0;idx<patternNum;idx++)
@@ -41,8 +41,6 @@ ImmaturePoint::ImmaturePoint(int u_, int v_, FrameHessian* host_, float type, Ca
 		int dy = patternP[idx][1];
 
         Vec3f ptc = getInterpolatedElement33BiLin(host->dI, u+dx, v+dy,wG[0]);
-
-
 
 		color[idx] = ptc[0];
 		if(!std::isfinite(color[idx])) {energyTH=NAN; return;}
@@ -63,8 +61,6 @@ ImmaturePoint::ImmaturePoint(int u_, int v_, FrameHessian* host_, float type, Ca
 ImmaturePoint::~ImmaturePoint()
 {
 }
-
-
 
 /*
  * returns
