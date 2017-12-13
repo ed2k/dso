@@ -175,7 +175,8 @@ void FrameHessian::makeImages(float* color, CalibHessian* HCalib)
 			if(setting_gammaWeightsPixelSelect==1 && HCalib!=0)
 			{
 				float gw = HCalib->getBGradOnly((float)(dI_l[idx][0]));
-				dabs_l[idx] *= gw*gw;	// convert to gradient of original color space (before removing response).
+				dabs_l[idx] *= gw*gw;
+                // convert to gradient of original color space (before removing response).
 			}
 		}
 	}

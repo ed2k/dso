@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -28,7 +28,7 @@
 #include "util/NumType.h"
 
 
- 
+
 
 namespace dso
 {
@@ -196,12 +196,13 @@ inline int gridMaxSelection(Eigen::Vector3f* grads, bool* map_out, int w, int h,
 }
 
 
-inline int makePixelStatus(Eigen::Vector3f* grads, bool* map, int w, int h, float desiredDensity, int recsLeft=5, float THFac = 1)
+inline int
+makePixelStatus(Eigen::Vector3f* grads, bool* map, int w, int h, float desiredDensity,
+        int recsLeft=5, float THFac = 1)
 {
 	if(sparsityFactor < 1) sparsityFactor = 1;
 
 	int numGoodPoints;
-
 
 	if(sparsityFactor==1) numGoodPoints = gridMaxSelection<1>(grads, map, w, h, THFac);
 	else if(sparsityFactor==2) numGoodPoints = gridMaxSelection<2>(grads, map, w, h, THFac);
@@ -216,28 +217,22 @@ inline int makePixelStatus(Eigen::Vector3f* grads, bool* map, int w, int h, floa
 	else if(sparsityFactor==11) numGoodPoints = gridMaxSelection<11>(grads, map, w, h, THFac);
 	else numGoodPoints = gridMaxSelection(grads, map, w, h, sparsityFactor, THFac);
 
-
 	/*
 	 * #points is approximately proportional to sparsityFactor^2.
 	 */
-
 	float quotia = numGoodPoints / (float)(desiredDensity);
 
 	int newSparsity = (sparsityFactor * sqrtf(quotia))+0.7f;
 
-
 	if(newSparsity < 1) newSparsity=1;
-
 
 	float oldTHFac = THFac;
 	if(newSparsity==1 && sparsityFactor==1) THFac = 0.5;
-
 
 	if((abs(newSparsity-sparsityFactor) < 1 && THFac==oldTHFac) ||
 			( quotia > 0.8 &&  1.0f / quotia > 0.8) ||
 			recsLeft == 0)
 	{
-
 //		printf(" \n");
 		//all good
 		sparsityFactor = newSparsity;

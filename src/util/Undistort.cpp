@@ -850,7 +850,6 @@ void Undistort::readFromFile(const char* configFileName, int nPars, std::string 
                    outputCalibration[0],outputCalibration[1],outputCalibration[2],outputCalibration[3]);
         }
 
-
 		K.setIdentity();
         K(0,0) = outputCalibration[0] * w;
         K(1,1) = outputCalibration[1] * h;

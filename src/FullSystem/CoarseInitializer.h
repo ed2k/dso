@@ -82,7 +82,6 @@ public:
 	CoarseInitializer(int w, int h);
 	~CoarseInitializer();
 
-
 	void setFirst(	CalibHessian* HCalib, FrameHessian* newFrameHessian);
 	bool trackFrame(FrameHessian* newFrameHessian, std::vector<IOWrap::Output3DWrapper*> &wraps);
 	void calcTGrads(FrameHessian* newFrameHessian);
@@ -95,7 +94,6 @@ public:
 	int numPoints[PYR_LEVELS];
 	AffLight thisToNext_aff;
 	SE3 thisToNext;
-
 
 	FrameHessian* firstFrame;
 	FrameHessian* newFrame;
@@ -160,9 +158,6 @@ private:
     void debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrapper*> &wraps);
 	void makeNN();
 };
-
-
-
 
 struct FLANNPointcloud
 {

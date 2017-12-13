@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -103,8 +103,6 @@ MinimalImageB* readStreamBW_8U(char* data, int numBytes)
 	memcpy(img->data, m.data, m.rows*m.cols);
 	return img;
 }
-
-
 
 void writeImage(std::string filename, MinimalImageB* img)
 {

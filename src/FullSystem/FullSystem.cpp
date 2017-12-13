@@ -746,7 +746,6 @@ void FullSystem::flagPointsForRemoval()
 			}
 		}
 	}
-
 }
 
 void FullSystem::addActiveFrame( ImageAndExposure* image, int id )

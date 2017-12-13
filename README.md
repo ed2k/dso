@@ -162,6 +162,7 @@ i.e., DSO computes the camera matrix `K` as
 For backwards-compatibility, if the given `cx` and `cy` are larger than 1, DSO assumes all four parameters to directly be the entries of K, 
 and ommits the above computation. 
 
+focal length 20mm on resolution 1000pixels over 5mm sensor, f=20****1000/5=4000pixels
 
 **That strange "0.5" offset:**
  Internally, DSO uses the convention that the pixel at integer position (1,1) in the image 

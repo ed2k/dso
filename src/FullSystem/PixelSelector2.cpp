@@ -63,6 +63,9 @@ PixelSelector::~PixelSelector()
 	delete[] thsSmoothed;
 }
 
+// [0] is total, return index of integral value equal to below
+// cap at index 90
+static
 int computeHistQuantil(int* hist, float below)
 {
 	int th = hist[0]*below+0.5f;
@@ -73,7 +76,6 @@ int computeHistQuantil(int* hist, float below)
 	}
 	return 90;
 }
-
 
 void PixelSelector::makeHists(const FrameHessian* const fh)
 {
@@ -102,7 +104,7 @@ void PixelSelector::makeHists(const FrameHessian* const fh)
 				int g = sqrtf(map0[i+j*w]);
 				if(g>48) g=48;
 				hist0[g+1]++;
-				hist0[0]++;
+				hist0[0]++; // total
 			}
 
 			ths[x+y*w32] = computeHistQuantil(hist0,setting_minGradHistCut) + setting_minGradHistAdd;
@@ -114,8 +116,8 @@ void PixelSelector::makeHists(const FrameHessian* const fh)
 			float sum=0,num=0;
 			if(x>0)
 			{
-				if(y>0) 	{num++; 	sum+=ths[x-1+(y-1)*w32];}
-				if(y<h32-1) {num++; 	sum+=ths[x-1+(y+1)*w32];}
+				if(y>0) 	{num++; sum+=ths[x-1+(y-1)*w32];}
+				if(y<h32-1) {num++; sum+=ths[x-1+(y+1)*w32];}
 				num++; sum+=ths[x-1+(y)*w32];
 			}
 
@@ -131,10 +133,10 @@ void PixelSelector::makeHists(const FrameHessian* const fh)
 			num++; sum+=ths[x+y*w32];
 
 			thsSmoothed[x+y*w32] = (sum/num) * (sum/num);
-
 		}
 }
 
+// select points, output as 2D status maps
 int PixelSelector::makeMaps(
 		const FrameHessian* const fh,
 		float* map_out, float density, int recursionsLeft, bool plot, float thFactor)
@@ -174,7 +176,6 @@ int PixelSelector::makeMaps(
 
 		if(fh != gradHistFrame) makeHists(fh);
 
-		// select!
 		Eigen::Vector3i n = this->select(fh, map_out,currentPotential, thFactor);
 
 		// sub-select!
@@ -277,6 +278,7 @@ int PixelSelector::makeMaps(
 	return numHaveSub;
 }
 
+// randomly select points
 Eigen::Vector3i PixelSelector::select(const FrameHessian* const fh,
 		float* map_out, int pot, float thFactor)
 {

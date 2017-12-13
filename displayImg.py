@@ -34,6 +34,17 @@ def overlay_img(dst_img,src_img, x,y):
     h,w,c = src_img.shape
     dst_img[y:y+h,x:x+w] = src_img
 
+def test_canny(img):
+    edges = cv2.Canny(img,100,200)
+    h,w,c = img.shape
+    for x in range(w):
+      for y in range(h):
+        e = edges[y,x]
+        if e==255:
+          green = img[y,x,1] + 100
+          if green > 255: img[y,x,1] = 255
+          else: img[y,x,1] = green
+
 import sys
 if len(sys.argv) < 2:
   cap = myreader('/home/a/SEQ_0/v.mp4')
@@ -44,11 +55,12 @@ cnt = 1
 while(cap.isOpened()):
     ret, f = cap.read()
     if f is None : break
-    print (f.shape)
+    #print (f.shape)
     frame = down_scale_img(f,640)
     f2 = down_scale_img(frame, 160)
     f3 = down_scale_img(f2, 80)
     f4 = down_scale_img(f3, 40)
+    test_canny(f2)
     overlay_img(frame, f2, 0,0)
     overlay_img(frame, f3, frame.shape[1]-f3.shape[1],0)
     overlay_img(frame, f4, frame.shape[1]-f4.shape[1]-f3.shape[1],0)

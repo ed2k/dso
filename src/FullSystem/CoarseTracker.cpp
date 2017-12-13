@@ -796,7 +796,7 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt,
 
         for(IOWrap::Output3DWrapper* ow : wraps) {
             ow->pushDepthImage(&mf);
-            ow->pushResidualImage(&mf);
+            //ow->pushResidualImage(&mf);
         }
 
 		if(debugSaveImages)
