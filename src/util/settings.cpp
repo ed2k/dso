@@ -149,7 +149,7 @@ float freeDebugParam1 = 1;
 float freeDebugParam2 = 1;
 float freeDebugParam3 = 1;
 float freeDebugParam4 = 1;
-float freeDebugParam5 = 1;
+int freeDebugParam5 = 1;
 
 
 bool disableReconfigure=false;
@@ -177,23 +177,15 @@ bool setting_debugout_runquiet = false;
 
 int sparsityFactor = 5;	// not actually a setting, only some legacy stuff for coarse initializer.
 
-
+// set debugParam to 0-7
 void handleKey(char k)
 {
 	char kkk = k;
-	switch(kkk)
-	{
-	case 'd': case 'D':
-		freeDebugParam5 = ((int)(freeDebugParam5+1))%10;
-		printf("new freeDebugParam5: %f!\n", freeDebugParam5);
-		break;
-	case 's': case 'S':
-		freeDebugParam5 = ((int)(freeDebugParam5-1+10))%10;
-		printf("new freeDebugParam5: %f!\n", freeDebugParam5);
-		break;
-	}
+    if ('0' <= kkk && '8'> kkk) {
+	    freeDebugParam5 = ((int)(kkk-'0'))%8;
+	    printf("new freeDebugParam5: %f!\n", freeDebugParam5);
+    }
 }
-
 
 int staticPattern[10][40][2] = {
 		{{0,0}, 	  {-100,-100}, {-100,-100}, {-100,-100}, {-100,-100}, {-100,-100}, {-100,-100}, {-100,-100}, {-100,-100}, {-100,-100},	// .

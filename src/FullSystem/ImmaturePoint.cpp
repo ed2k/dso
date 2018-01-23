@@ -523,7 +523,6 @@ double ImmaturePoint::linearizeResidual(
 		bd += (hw*residual)*d_idepth;
 	}
 
-
 	if(energyLeft > energyTH*outlierTHSlack)
 	{
 		energyLeft = energyTH*outlierTHSlack;
@@ -537,7 +536,6 @@ double ImmaturePoint::linearizeResidual(
 	tmpRes->state_NewEnergy = energyLeft;
 	return energyLeft;
 }
-
 
 
 }

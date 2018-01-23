@@ -2,6 +2,9 @@ import sys
 import numpy as np
 import transformations as tr
 
+# format from result.txt
+# cam i,t,x,y,z,qx,qy,qz,qw
+# 4x3 rotation matrix
 def get_cam():
 	data = {}
 	ridx = 0

@@ -115,7 +115,7 @@ void PangolinDSOViewer::run()
 	// parameter reconfigure gui
 	pangolin::CreatePanel("ui").SetBounds(0.0, 1.0, 0.0, pangolin::Attach::Pix(UI_WIDTH));
 
-	pangolin::Var<int> settings_pointCloudMode("ui.PC_mode",1,1,4,false);
+	pangolin::Var<int> settings_pointCloudMode("ui.PC_mode",0,0,3,false);
 
 	pangolin::Var<bool> settings_showKFCameras("ui.KFCam",false,true);
 	pangolin::Var<bool> settings_showCurrentCamera("ui.CurrCam",true,true);
@@ -314,7 +314,7 @@ void PangolinDSOViewer::reset_internal()
 	needReset = false;
 }
 
-
+//``#include "types_c.h"
 void PangolinDSOViewer::drawConstraints()
 {
 	if(settings_showAllConstraints)
@@ -367,7 +367,7 @@ void PangolinDSOViewer::drawConstraints()
 		float colorRed[3] = {1,0,0};
 		glColor3f(colorRed[0],colorRed[1],colorRed[2]);
 		glLineWidth(1);
-
+        // draw cam trajectory
 		glBegin(GL_LINE_STRIP);
         for(unsigned int i=0;i<keyframes.size();i++) {
         	glVertex3f((float)keyframes[i]->camToWorld.translation()[0],
@@ -383,31 +383,34 @@ void PangolinDSOViewer::drawConstraints()
 		glColor3f(colorGreen[0],colorGreen[1],colorGreen[2]);
 		glLineWidth(1);
 
+        // try draw bounding floor plane
 		glBegin(GL_LINE_STRIP);
-		for(unsigned int i=0;i<allFramePoses.size();i++) {
-			glVertex3f((float)allFramePoses[i][0],
-					(float)allFramePoses[i][1]+0.1,
-					(float)allFramePoses[i][2]);
-        }
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-		for(unsigned int i=0;i<allFramePoses.size();i++) {
-            float y = allFramePoses[i][1];
-			glVertex3f((float)allFramePoses[i][0], 1,
-					(float)allFramePoses[i][2]);
-        }
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-		for(unsigned int i=0;i<allFramePoses.size();i++) {
-            float y = allFramePoses[i][1];
-			glVertex3f((float)allFramePoses[i][0],y,1);
-		}
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-		for(unsigned int i=0;i<allFramePoses.size();i++) {
-            float y = allFramePoses[i][1];
-            float z = allFramePoses[i][2];
-			glVertex3f(1,y,z);
+		unsigned int i=keyframes.size()-1;
+        if (i>1){
+		    //unsigned int i=allFramePoses.size()-1;
+            float x0 = keyframes[i-1]->camToWorld.translation()[0];
+            float y0 = keyframes[i-1]->camToWorld.translation()[1];
+            float z0 = keyframes[i-1]->camToWorld.translation()[2];
+            float x = keyframes[i]->camToWorld.translation()[0];
+            float y = keyframes[i]->camToWorld.translation()[1];
+            float z = keyframes[i]->camToWorld.translation()[2];
+            float dz = z-z0;
+            float dx = x-x0;
+            float dy = y-y0;
+            // z is move direction, y height, x, left/right
+            float d = 0.15, w = 1.0, s=3.0;
+			glVertex3f(x+w,y+d+dz,z-s);
+			glVertex3f(x-w,y+d+dz,z-s);
+			glVertex3f(x-w,y+d-dz,z+s);
+			glVertex3f(x+w,y+d-dz,z+s);
+			glVertex3f(x+w,y+d+dz,z-s);
+			glVertex3f(x-w,y+d-dz,z+s);
+			glVertex3f(x-w,y+d+dz,z-s);
+			glVertex3f(x+w,y+d-dz,z+s);
+            //CvMat *res = cvCreateMat(3,1,CV_32FC1);
+            //CvMat *matX = cvCreateMat(30,3,CV_32FC1);
+           // CvMat *matZ = cvCreateMat(30,1,CV_32FC1);
+
 		}
 		glEnd();
 	}

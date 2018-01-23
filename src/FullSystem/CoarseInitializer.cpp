@@ -280,9 +280,9 @@ void CoarseInitializer::debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrap
 		Pnt* point = points[lvl]+i;
 
 		if(!point->isGood)
-			iRImg.setPixel1(point->u+0.5f,point->v+0.5f,Vec3b(0,0,0));
+			iRImg.setPixel4(point->u+0.5f,point->v+0.5f,Vec3b(0,0,0));
 		else
-			iRImg.setPixel1(point->u+0.5f,point->v+0.5f,makeRainbow3B(point->iR*fac));
+			iRImg.setPixel4(point->u+0.5f,point->v+0.5f,makeRainbow3B(point->iR*fac));
 	}
 
 	//IOWrap::displayImage("idepth-R", &iRImg, false);
@@ -292,7 +292,7 @@ void CoarseInitializer::debugPlot_func(int lvl, std::vector<IOWrap::Output3DWrap
     }
 }
 
-// calculates residual, Hessian and Hessian-block neede for re-substituting depth.
+// calculates residual, Hessian and Hessian-block needed for re-substituting depth.
 Vec3f CoarseInitializer::calcResAndGS(
 		int lvl, Mat88f &H_out, Vec8f &b_out,
 		Mat88f &H_out_sc, Vec8f &b_out_sc,

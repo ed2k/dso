@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -93,7 +93,6 @@ public:
         return (id < other.id);
     }
 
-
 private:
 	float fx,fy,cx,cy;
 	float fxi,fyi,cxi,cyi;
@@ -105,11 +104,9 @@ private:
 	float my_minRelBS;
 	bool needRefresh;
 
-
 	int numSparsePoints;
 	int numSparseBufferSize;
     InputPointSparse<MAX_RES_PER_POINT>* originalInputSparse;
-
 
 	bool bufferValid;
 	int numGLBufferPoints;

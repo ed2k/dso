@@ -348,9 +348,6 @@ void CoarseTracker::calcGSSSE(int lvl, Mat88 &H_out, Vec8 &b_out, const SE3 &ref
 	b_out.segment<1>(7) *= SCALE_B;
 }
 
-
-
-
 Vec6 CoarseTracker::calcRes(int lvl, const SE3 &refToNew, AffLight aff_g2l, float cutoffTH)
 {
 	float E = 0;
@@ -366,18 +363,15 @@ Vec6 CoarseTracker::calcRes(int lvl, const SE3 &refToNew, AffLight aff_g2l, floa
 	float cxl = cx[lvl];
 	float cyl = cy[lvl];
 
-
 	Mat33f RKi = (refToNew.rotationMatrix().cast<float>() * Ki[lvl]);
 	Vec3f t = (refToNew.translation()).cast<float>();
 	Vec2f affLL = AffLight::fromToVecExposure(lastRef->ab_exposure, newFrame->ab_exposure, lastRef_aff_g2l, aff_g2l).cast<float>();
-
 
 	float sumSquaredShiftT=0;
 	float sumSquaredShiftRT=0;
 	float sumSquaredShiftNum=0;
 
 	float maxEnergy = 2*setting_huberTH*cutoffTH-setting_huberTH*setting_huberTH;	// energy for r=setting_coarseCutoffTH.
-
 
     MinimalImageB3* resImage = 0;
 	if(debugPlot)
@@ -391,7 +385,6 @@ Vec6 CoarseTracker::calcRes(int lvl, const SE3 &refToNew, AffLight aff_g2l, floa
 	float* lpc_v = pc_v[lvl];
 	float* lpc_idepth = pc_idepth[lvl];
 	float* lpc_color = pc_color[lvl];
-
 
 	for(int i=0;i<nl;i++)
 	{
@@ -491,7 +484,7 @@ Vec6 CoarseTracker::calcRes(int lvl, const SE3 &refToNew, AffLight aff_g2l, floa
 	if(debugPlot)
 	{
 		IOWrap::displayImage("RES", resImage, false);
-		IOWrap::waitKey(0);
+		IOWrap::waitKey(5);
 		delete resImage;
 	}
 
@@ -506,11 +499,6 @@ Vec6 CoarseTracker::calcRes(int lvl, const SE3 &refToNew, AffLight aff_g2l, floa
 	return rs;
 }
 
-
-
-
-
-
 void CoarseTracker::setCoarseTrackingRef(
 		std::vector<FrameHessian*> frameHessians)
 {
@@ -518,14 +506,13 @@ void CoarseTracker::setCoarseTrackingRef(
 	lastRef = frameHessians.back();
 	makeCoarseDepthL0(frameHessians);
 
-
-
 	refFrameID = lastRef->shell->id;
 	lastRef_aff_g2l = lastRef->aff_g2l();
 
 	firstCoarseRMSE=-1;
 
 }
+
 bool CoarseTracker::trackNewestCoarse(
 		FrameHessian* newFrameHessian,
 		SE3 &lastToNew_out, AffLight &aff_g2l_out,
@@ -710,15 +697,12 @@ bool CoarseTracker::trackNewestCoarse(
 	return true;
 }
 
-
-
 void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt,
         std::vector<IOWrap::Output3DWrapper*> &wraps)
 {
     if(w[1] == 0) return;
 
 	int lvl = 0;
-
 	{
 		std::vector<float> allID;
 		for(int i=0;i<h[lvl]*w[lvl];i++)
@@ -751,7 +735,6 @@ void CoarseTracker::debugPlotIDepthMap(float* minID_pt, float* maxID_pt,
 					minID = *minID_pt - maxChange;
 				if(minID > *minID_pt + maxChange)
 					minID = *minID_pt + maxChange;
-
 
 				if(maxID < *maxID_pt - maxChange)
 					maxID = *maxID_pt - maxChange;

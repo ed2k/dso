@@ -163,7 +163,7 @@ extern float freeDebugParam1;
 extern float freeDebugParam2;
 extern float freeDebugParam3;
 extern float freeDebugParam4;
-extern float freeDebugParam5;
+extern int freeDebugParam5;
 
 void handleKey(char k);
 

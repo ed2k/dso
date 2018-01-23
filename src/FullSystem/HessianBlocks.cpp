@@ -102,8 +102,6 @@ void FrameHessian::setStateZero(const Vec10 &state_zero)
 	nullspaces_affine.topRightCorner<2,1>() = Vec2(0, expf(aff_g2l_0().a)*ab_exposure);
 };
 
-
-
 void FrameHessian::release()
 {
 	// DELETE POINT
@@ -191,13 +189,10 @@ void FrameFramePrecalc::set(FrameHessian* host, FrameHessian* target, CalibHessi
 	PRE_RTll_0 = (leftToLeft_0.rotationMatrix()).cast<float>();
 	PRE_tTll_0 = (leftToLeft_0.translation()).cast<float>();
 
-
-
 	SE3 leftToLeft = target->PRE_worldToCam * host->PRE_camToWorld;
 	PRE_RTll = (leftToLeft.rotationMatrix()).cast<float>();
 	PRE_tTll = (leftToLeft.translation()).cast<float>();
 	distanceLL = leftToLeft.translation().norm();
-
 
 	Mat33f K = Mat33f::Zero();
 	K(0,0) = HCalib->fxl();
@@ -208,7 +203,6 @@ void FrameFramePrecalc::set(FrameHessian* host, FrameHessian* target, CalibHessi
 	PRE_KRKiTll = K * PRE_RTll * K.inverse();
 	PRE_RKiTll = PRE_RTll * K.inverse();
 	PRE_KtTll = K * PRE_tTll;
-
 
 	PRE_aff_mode = AffLight::fromToVecExposure(host->ab_exposure, target->ab_exposure, host->aff_g2l(), target->aff_g2l()).cast<float>();
 	PRE_b0_mode = host->aff_g2l_0().b;

@@ -290,7 +290,6 @@ bool KeyFrameDisplay::refreshPC(bool canRefresh, float scaledTH, float absTH, in
 			}
 			vertexBufferNumPoints++;
 
-
 			assert(vertexBufferNumPoints <= numSparsePoints*patternNum);
 		}
 	}

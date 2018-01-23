@@ -341,9 +341,11 @@ inline Vec3b makeRainbow3B(float id)
 	float ifP = id-icP;
 	icP = icP%3;
 
-	if(icP == 0) return Vec3b(255*(1-ifP), 255*ifP,     0);
-	if(icP == 1) return Vec3b(0,           255*(1-ifP), 255*ifP);
-	if(icP == 2) return Vec3b(255*ifP,     0,           255*(1-ifP));
+	if(id < 0.2) return Vec3b(255, 255*id/0.2, 0);
+	if(id < 0.5) return Vec3b(255*(0.5-id)/0.3, 255, 0);
+	if(id < 0.9) return Vec3b(0, 255, 255*(id-0.5)/0.4);
+	if(id < 1.4) return Vec3b(0, 255*(1.4-id)/0.5, 255);
+	if(id < 2.0) return Vec3b(255*(id-1.4)/0.6, 0, 255);
 	return Vec3b(255,255,255);
 }
 

@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -30,7 +30,7 @@
  */
 
 #include "FullSystem/FullSystem.h"
- 
+
 #include "stdio.h"
 #include "util/globalFuncs.h"
 #include <Eigen/LU>
@@ -72,11 +72,6 @@ PointHessian* FullSystem::optimizeImmaturePoint(
 	float lastHdd=0;
 	float lastbd=0;
 	float currentIdepth=(point->idepth_max+point->idepth_min)*0.5f;
-
-
-
-
-
 
 	for(int i=0;i<nres;i++)
 	{
@@ -153,7 +148,6 @@ PointHessian* FullSystem::optimizeImmaturePoint(
 		return (PointHessian*)((long)(-1));		// yeah I'm like 99% sure this is OK on 32bit systems.
 	}
 
-
 	int numGoodRes=0;
 	for(int i=0;i<nres;i++)
 		if(residuals[i].state_state == ResState::IN) numGoodRes++;
@@ -163,8 +157,6 @@ PointHessian* FullSystem::optimizeImmaturePoint(
 		if(print) printf("OptPoint: OUTLIER!\n");
 		return (PointHessian*)((long)(-1));		// yeah I'm like 99% sure this is OK on 32bit systems.
 	}
-
-
 
 	PointHessian* p = new PointHessian(point, &Hcalib);
 	if(!std::isfinite(p->energyTH)) {delete p; return (PointHessian*)((long)(-1));}

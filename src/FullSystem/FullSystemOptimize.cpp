@@ -431,7 +431,7 @@ float FullSystem::optimize(int mnumOptIts)
 
     if(!setting_debugout_runquiet)
     {
-        printf("Initial Error       \t");
+        printf("Initial Error ");
         printOptRes(lastEnergy, lastEnergyL, lastEnergyM, 0, 0, frameHessians.back()->aff_g2l().a, frameHessians.back()->aff_g2l().b);
     }
 

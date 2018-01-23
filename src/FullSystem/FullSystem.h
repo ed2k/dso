@@ -146,7 +146,6 @@ public:
 
 	void printResult(std::string file);
 
-	void debugPlot(std::string name);
 
 	void printFrameLifetimes();
 	// contains pointers to active frames
@@ -163,6 +162,7 @@ public:
 	void setOriginalCalib(const VecXf &originalCalib, int originalW, int originalH);
 
 private:
+	void debugFramesWindow(std::string name);
 
 	CalibHessian Hcalib;
 

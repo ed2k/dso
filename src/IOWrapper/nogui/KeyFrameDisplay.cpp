@@ -184,7 +184,7 @@ bool KeyFrameDisplay::refreshPC(bool canRefresh, float scaledTH, float absTH, in
 	return true;
 }
 
-
+// nogui, don't draw anything
 void KeyFrameDisplay::drawCam(float lineWidth, float* color, float sizeFactor)
 {
 	if(width == 0)
@@ -194,34 +194,6 @@ void KeyFrameDisplay::drawCam(float lineWidth, float* color, float sizeFactor)
 
 		Sophus::Matrix4f m = camToWorld.matrix().cast<float>();
 /*		glMultMatrixf((GLfloat*)m.data());
-
-		if(color == 0)
-		{
-			glColor3f(1,0,0);
-		}
-		else
-			glColor3f(color[0],color[1],color[2]);
-
-		glVertex3f(0,0,0);
-		glVertex3f(sz*(0-cx)/fx,sz*(0-cy)/fy,sz);
-		glVertex3f(0,0,0);
-		glVertex3f(sz*(0-cx)/fx,sz*(height-1-cy)/fy,sz);
-		glVertex3f(0,0,0);
-		glVertex3f(sz*(width-1-cx)/fx,sz*(height-1-cy)/fy,sz);
-		glVertex3f(0,0,0);
-		glVertex3f(sz*(width-1-cx)/fx,sz*(0-cy)/fy,sz);
-
-		glVertex3f(sz*(width-1-cx)/fx,sz*(0-cy)/fy,sz);
-		glVertex3f(sz*(width-1-cx)/fx,sz*(height-1-cy)/fy,sz);
-
-		glVertex3f(sz*(width-1-cx)/fx,sz*(height-1-cy)/fy,sz);
-		glVertex3f(sz*(0-cx)/fx,sz*(height-1-cy)/fy,sz);
-
-		glVertex3f(sz*(0-cx)/fx,sz*(height-1-cy)/fy,sz);
-		glVertex3f(sz*(0-cx)/fx,sz*(0-cy)/fy,sz);
-
-		glVertex3f(sz*(0-cx)/fx,sz*(0-cy)/fy,sz);
-		glVertex3f(sz*(width-1-cx)/fx,sz*(0-cy)/fy,sz);
 */
 }
 

@@ -213,7 +213,6 @@ void FullSystem::setGammaFunction(float* BInv)
 	// copy BInv.
 	memcpy(Hcalib.Binv, BInv, sizeof(float)*256);
 
-
 	// invert.
 	for(int i=1;i<255;i++)
 	{
@@ -232,7 +231,6 @@ void FullSystem::setGammaFunction(float* BInv)
 	Hcalib.B[0] = 0;
 	Hcalib.B[255] = 255;
 }
-
 
 // TODO get point 3d output
 void FullSystem::printResult(std::string file)
@@ -494,8 +492,6 @@ void FullSystem::activatePointsMT_Reductor(
 	delete[] tr;
 }
 
-
-
 void FullSystem::activatePointsMT()
 {
 
@@ -587,7 +583,6 @@ void FullSystem::activatePointsMT()
 
 			if((u > 0 && v > 0 && u < wG[1] && v < hG[1]))
 			{
-
 				float dist = coarseDistanceMap->fwdWarpedIDDistFinal[u+wG[1]*v] + (ptp[0]-floorf((float)(ptp[0])));
 
 				if(dist>=currentMinActDist* ph->my_type)
@@ -1044,7 +1039,6 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 
 	// =========================== REMOVE OUTLIER =========================
 	removeOutliers();
-
 	{
 		boost::unique_lock<boost::mutex> crlock(coarseTrackerSwapMutex);
 		coarseTracker_forNewKF->makeK(&Hcalib);
@@ -1055,10 +1049,9 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
         coarseTracker_forNewKF->debugPlotIDepthMapFloat(outputWrapper);
 	}
 
-	debugPlot("post Optimize");
-
 	// =========================== (Activate-)Marginalize Points =========================
 	flagPointsForRemoval();
+	debugFramesWindow("post Optimize");
 	ef->dropPointsF();
 	getNullspaces(
 			ef->lastNullspaces_pose,
@@ -1354,28 +1347,17 @@ void FullSystem::printFrameLifetimes()
 			<< " " << s->statistics_outlierResOnThis
 			<< " " << s->movedByOpt;
 
-
-
 		(*lg) << "\n";
 	}
 
-
-
-
-
 	lg->close();
 	delete lg;
-
 }
-
 
 void FullSystem::printEvalLine()
 {
 	return;
 }
-
-
-
 
 
 }
