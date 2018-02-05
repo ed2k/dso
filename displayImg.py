@@ -1,4 +1,4 @@
-import cv2
+import cv2, numpy as np
 import os
 
 class myreader:
@@ -34,16 +34,10 @@ def overlay_img(dst_img,src_img, x,y):
     h,w,c = src_img.shape
     dst_img[y:y+h,x:x+w] = src_img
 
+def test_diff(prev_img, img):
+    return cv2.absdiff(prev_img,img)
 def test_canny(img):
-    edges = cv2.Canny(img,100,200)
-    h,w,c = img.shape
-    for x in range(w):
-      for y in range(h):
-        e = edges[y,x]
-        if e==255:
-          green = img[y,x,1] + 100
-          if green > 255: img[y,x,1] = 255
-          else: img[y,x,1] = green
+    return cv2.Canny(img,100,200)
 
 import sys
 if len(sys.argv) < 2:
@@ -52,19 +46,29 @@ else:
   cap = myreader(sys.argv[1])
 
 cnt = 1
+prevImg = None
 while(cap.isOpened()):
     ret, f = cap.read()
     if f is None : break
     #print (f.shape)
     frame = down_scale_img(f,640)
+    grey = down_scale_img(f,640)
     f2 = down_scale_img(frame, 160)
     f3 = down_scale_img(f2, 80)
     f4 = down_scale_img(f3, 40)
-    test_canny(f2)
+    if cnt > 1:
+        frame = test_diff(prevImg, frame)
+        #dup2 = test_canny(frame)
+        grey = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        #_, grey = cv2.threshold(grey,20,255,cv2.THRESH_TOZERO)
+        #_,cnts,_ = cv2.findContours(grey.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        #cv2.drawContours(frame, [c],0,(0,255,0), 1)
+        #grey = np.minimum(grey+frame,255)
+    prevImg = down_scale_img(f, 640)
     overlay_img(frame, f2, 0,0)
     overlay_img(frame, f3, frame.shape[1]-f3.shape[1],0)
     overlay_img(frame, f4, frame.shape[1]-f4.shape[1]-f3.shape[1],0)
-    cv2.imshow('f', frame)
+    cv2.imshow('f', grey)
     cnt += 1
     key = cv2.waitKey(1)
 
