@@ -349,7 +349,7 @@ void Undistort::loadPhotometricCalibration(std::string file, std::string noiseIm
 template<typename T>
 ImageAndExposure* Undistort::undistort(const MinimalImage<T>* image_raw, float exposure, double timestamp, float factor) const
 {
-	if(image_raw->w != wOrg || image_raw->h != hOrg)
+    if(image_raw->w != wOrg || image_raw->h != hOrg)
 	{
 		printf("Undistort:undistort: wrong image size %d %d instead of %d %d\n", image_raw->w, image_raw->h, wOrg, hOrg);
 		exit(1);

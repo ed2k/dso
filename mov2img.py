@@ -4,20 +4,19 @@ import cv2
 
 cap = cv2.VideoCapture('/home/a/SEQ_0/v.mp4')
 cnt = 1
-while cnt < 3000:
+while cnt < 0:
     cap.grab()
     cnt += 1
+
 while(cap.isOpened()):
     ret, f = cap.read()
-    if f is None or cnt > 5900: break
-    frame = f
-    h,w,c = frame.shape
-    frame = cv2.resize(frame, (1280,720))
-    cv2.imshow('f', frame)
-    if cnt > 3000:
-      cv2.imwrite('/home/a/SEQ_0/z3/%04d.jpg' % (cnt), frame)
-    cnt += 1
+    if f is None or cnt > 9999900: break
+    frame = cv2.resize(f,(1280,720))
+    cv2.imwrite('/home/a/SEQ_0/z0/%05d.jpg' % (cnt), frame)
     print (cnt, frame.shape)
+    #h,w,c = frame.shape
+    #cv2.imshow('f', frame)
+    cnt += 1
     cv2.waitKey(1)
 
 cap.release()
