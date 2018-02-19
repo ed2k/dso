@@ -87,8 +87,7 @@ def find_lane(img, track=None):
     pts = [(0,h/4),(0,h/2),(w/4,h/2),(w/2-w/16,0),(w/2-w/8,0)]
     if track is not None:
         pts = get_lane_area(track[0],track[1],w/2,h/2)
-        cnts_htr = 2
-        line_thr = 20
+        cnts_thr = 2
     cv2.fillConvexPoly(mask, np.int32(pts), 1.0)
     thr = mask * thr
     _,cnts,_ = cv2.findContours(thr.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -130,7 +129,7 @@ def find_box2(img, track=None):
     thr = np.zeros((h/2,w/2), np.uint8)
     r = []
     for cnt in cnts:
-      if len(cnt) > cnts_thr or len(cnt)<w/100: continue
+      if len(cnt) > cnts_thr or len(cnt)<w/40: continue
       rect = cv2.minAreaRect(cnt)
       box = cv2.boxPoints(rect)
       box = np.int0(box)
@@ -147,7 +146,7 @@ def find_box(img, track=None):
     thr = np.zeros((h/2,w/2), np.uint8)
     r = []
     for cnt in cnts:
-      if len(cnt) > cnts_thr or len(cnt) < w/100: continue
+      if len(cnt) > cnts_thr or len(cnt) < w/40: continue
       rect = cv2.minAreaRect(cnt)
       box = cv2.boxPoints(rect)
       box = np.int0(box)
@@ -196,7 +195,7 @@ while(cap.isOpened()):
     find_calib(frame)
     img = down_scale_img(f,640)
     mask = fg_mask(img)
-    cnts +=  find_box(f, None)
+    cnts +=  find_box(mask, None)
     find_calib(mask)
     mask = cnts2mask(mask,cnts)
     cv2.bitwise_and(frame,mask,frame)
