@@ -1,6 +1,8 @@
 import cv2, numpy as np
 import os
 
+GREEN = (0,255,0)
+
 class myreader:
   def __init__(m, f=''):
     if f == '':
@@ -34,8 +36,15 @@ def overlay_img(dst_img,src_img, x,y):
     h,w,c = src_img.shape
     dst_img[y:y+h,x:x+w] = src_img
 
+def fg_mask(img):
+    img = fgbg.apply(img)
+    img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    return img
 def test_diff(prev_img, img):
-    return cv2.absdiff(prev_img,img)
+    img = fgbg.apply(img)
+    img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    return img
+    #return cv2.absdiff(prev_img,img)
 def test_canny(img):
     return cv2.Canny(img,100,200)
 
@@ -44,43 +53,116 @@ def get_fft(img):
     fshift = np.fft.fftshift(f)
     return 20*np.log(np.abs(fshift))
 
-def find_lane(img):
+def get_lane_area(rho, theta, width, height):
+    def intersect(rho1):
+        c = np.cos(theta)
+        s = np.sin(theta)
+        x = int(rho1/c)
+        y = int(rho1/s)
+        if y<height: return ((x,0),(0,y))
+        x1 = int((y-height)*s/c)
+        return ((x,0),(x1,y))
+    pts = intersect(rho+10)
+    p0 = intersect(rho-10)
+    return [p0[0],p0[1],pts[1],pts[0]]
+def draw_line(img, rho, theta, offy, h):
+    a = np.cos(theta)
+    b = np.sin(theta)
+    x0 = a*rho
+    y0 = b*rho+(h/2)
+    x1 = int(x0 + offy*(-b))
+    y1 = int(y0 + offy*(a))
+    x2 = int(x0 - offy*(-b))
+    y2 = int(y0 - offy*(a))
+    cv2.line(img,(x1,y1),(x2,y2),(0,0,255),1)
+def find_lane(img, track=None):
     h,w,_ = img.shape
-    offx = int(w/4)
     offy = int(h/2)
     grey = cv2.cvtColor(img[-h/2:,:w/2], cv2.COLOR_RGB2GRAY)
-    _, thr = cv2.threshold(grey, 20,255, cv2.THRESH_TOZERO)
+    _, thr = cv2.threshold(grey, 12,255, cv2.THRESH_TOZERO)
+    _, thr = cv2.threshold(grey, 0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     mask = np.zeros((h/2,w/2), np.uint8)
+    cnts_thr = 20
+    lines_thr = 90
     pts = [(0,h/4),(0,h/2),(w/4,h/2),(w/2-w/16,0),(w/2-w/8,0)]
+    if track is not None:
+        pts = get_lane_area(track[0],track[1],w/2,h/2)
+        cnts_htr = 2
+        line_thr = 20
     cv2.fillConvexPoly(mask, np.int32(pts), 1.0)
     thr = mask * thr
     _,cnts,_ = cv2.findContours(thr.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     thr = np.zeros((h/2,w/2), np.uint8)
     for cnt in cnts:
-        if len(cnt) < 20: continue
+        approx = cv2.approxPolyDP(cnt,0.01*cv2.arcLength(cnt,True),True)
+        if len(approx) < cnts_thr: continue
         cv2.drawContours(img, [cnt], -1, (0,255,0), offset=(0,offy))
         cv2.drawContours(thr, [cnt], -1, 255, offset=(0,0))
     #edges = cv2.Canny(grey,50,150,apertureSize = 3)
-    lines = cv2.HoughLines(thr,1,np.pi/180,90)
-    if lines is None: return
-    c = 0
+    lines = cv2.HoughLines(thr,1,np.pi/180,lines_thr)
+    if lines is None: return None
     for line in lines:
         rho,theta = line[0]
         if theta < np.pi*20/180: continue
         if theta > np.pi*70/180: continue
-        c += 1
-        if c>9: return
-        a = np.cos(theta)
-        b = np.sin(theta)
-        x0 = a*rho
-        y0 = b*rho+(h/2)
-        x1 = int(x0 + offy*(-b))
-        y1 = int(y0 + offy*(a))
-        x2 = int(x0 - offy*(-b))
-        y2 = int(y0 - offy*(a))
+        print(rho, theta)
+        return (rho, theta)
 
-        cv2.line(img,(x1,y1),(x2,y2),(0,0,255),1)
-
+def find_calib(img):
+    h,w,_ = img.shape
+    dx = w/10
+    dy = h/8
+    dh = h/8
+    pts = np.int32([(w/2-dx,h/2-dy), (0,h-dh),(w,h)])
+    #cv2.polylines(img,[pts.reshape((-1,1,2))],True,GREEN)
+    mask = np.zeros((h,w,3), np.uint8)
+    cv2.fillConvexPoly(mask, pts, (255,255,255))
+    #img = mask*img
+    cv2.bitwise_and(img,mask,img)
+    return (dx,dy,dh)
+def find_box2(img, track=None):
+    h,w,_ = img.shape
+    grey = cv2.cvtColor(img[h/4:,:], cv2.COLOR_RGB2GRAY)
+    #grey = cv2.Canny(grey,50,150,apertureSize = 3)
+    _, thr = cv2.threshold(grey, 0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    cnts_thr = w/6
+    _,cnts,_ = cv2.findContours(thr.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    thr = np.zeros((h/2,w/2), np.uint8)
+    r = []
+    for cnt in cnts:
+      if len(cnt) > cnts_thr or len(cnt)<w/100: continue
+      rect = cv2.minAreaRect(cnt)
+      box = cv2.boxPoints(rect)
+      box = np.int0(box)
+      r.append(box+[0,h/4])
+      #cv2.drawContours(img,[box+[0,h/4]],0,GREEN,1)
+    return r
+def find_box(img, track=None):
+    h,w,_ = img.shape
+    grey = cv2.cvtColor(img[h/4:,:], cv2.COLOR_RGB2GRAY)
+    #grey = cv2.Canny(grey,50,150,apertureSize = 3)
+    _, thr = cv2.threshold(grey, 20,255,cv2.THRESH_BINARY)
+    cnts_thr = w/4
+    _,cnts,_ = cv2.findContours(thr.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    thr = np.zeros((h/2,w/2), np.uint8)
+    r = []
+    for cnt in cnts:
+      if len(cnt) > cnts_thr or len(cnt) < w/100: continue
+      rect = cv2.minAreaRect(cnt)
+      box = cv2.boxPoints(rect)
+      box = np.int0(box)
+      #cv2.drawContours(img,[box+[0,h/4]],0,GREEN,1)
+      r.append(box+[0,h/4])
+      #x,y,ww,hh = cv2.boundingRect(cnt)
+      #y = int(y+h/4)
+      #cv2.rectangle(img,(x,y),(x+int(ww),y+int(hh)),(0,255,0),1)
+    return r
+def cnts2mask(mask, cnts):
+    if mask is None:
+      mask = np.zeros((h,w,3), np.uint8)
+    for cnt in cnts:
+      cv2.fillConvexPoly(mask, cnt, (255,255,255))
+    return mask
 
 import sys
 if len(sys.argv) < 2:
@@ -88,22 +170,37 @@ if len(sys.argv) < 2:
 else:
   cap = myreader(sys.argv[1])
 
+track_lane = None
 cnt = 1
-_, f = cap.read()
-prevImg= down_scale_img(f,640)
+_, prev = cap.read()
+fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
+print(prev.shape)
 while(cap.isOpened()):
     ret, f = cap.read()
     if f is None : break
+    h,w,_ = f.shape
     #f = cv2.cvtColor(f, cv2.COLOR_RGB2GRAY)
     frame = down_scale_img(f,640)
     f2 = down_scale_img(frame, 160)
     f3 = down_scale_img(f2, 80)
     f4 = down_scale_img(f2, 40)
-    frame = test_diff(prevImg, frame)
     #dup2 = test_canny(frame)
-    find_lane(frame)
-    prevImg = down_scale_img(f, 640)
+    img = down_scale_img(f, 640)
+    #track_lane = find_lane(f2,track_lane)
+    find_box(f2,None)
+    if track_lane is not None:
+        print (track_lane)
+        draw_line(f2, track_lane[0],track_lane[1], 250, h*640/w)
     #f2 = get_fft(f2)
+    cnts = find_box2(frame,None)
+    find_calib(frame)
+    img = down_scale_img(f,640)
+    mask = fg_mask(img)
+    cnts +=  find_box(f, None)
+    find_calib(mask)
+    mask = cnts2mask(mask,cnts)
+    cv2.bitwise_and(frame,mask,frame)
+
     overlay_img(frame, f2, 0,0)
     overlay_img(frame, f3, frame.shape[1]-f3.shape[1],0)
     overlay_img(frame, f4, frame.shape[1]-f4.shape[1]-f3.shape[1],0)

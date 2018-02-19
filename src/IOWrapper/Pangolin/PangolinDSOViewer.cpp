@@ -168,7 +168,7 @@ void PangolinDSOViewer::run()
 				float blue[3] = {0,0,1};
 				if(this->settings_showKFCameras) fh->drawCam(1,blue,0.1);
 
-				refreshed =+ (int)(fh->refreshPC(refreshed < 10, this->settings_scaledVarTH, this->settings_absVarTH,
+				refreshed += (int)(fh->refreshPC(refreshed < 10, this->settings_scaledVarTH, this->settings_absVarTH,
 						this->settings_pointCloudMode, this->settings_minRelBS, this->settings_sparsity));
 				fh->drawPC(1);
 			}
