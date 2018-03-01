@@ -72,7 +72,6 @@ PangolinDSOViewer::~PangolinDSOViewer()
 	runThread.join();
 }
 
-
 void PangolinDSOViewer::run()
 {
 	printf("START PANGOLIN!\n");
@@ -174,6 +173,15 @@ void PangolinDSOViewer::run()
 			}
 			if(this->settings_showCurrentCamera) currentCam->drawCam(1,0,0.1);
 			drawConstraints();
+        if (keyframes.size()>0) {
+    std::vector<int> pts;
+    keyframes.back()->getPts(pts);
+    for(int p:pts) {
+        int x = p>>16;
+        int y = p&0xffff;
+        internalKFImg->setPixel9(x,y,Vec3b(255,255,255));
+    }
+            }
 			lk3d.unlock();
 		}
 

@@ -1051,7 +1051,7 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 
 	// =========================== (Activate-)Marginalize Points =========================
 	flagPointsForRemoval();
-	debugFramesWindow("post Optimize");
+	//debugFramesWindow("post Optimize");
 	ef->dropPointsF();
 	getNullspaces(
 			ef->lastNullspaces_pose,

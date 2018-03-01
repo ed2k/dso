@@ -193,8 +193,6 @@ void KeyFrameDisplay::drawCam(float lineWidth, float* color, float sizeFactor)
 	float sz=sizeFactor;
 
 		Sophus::Matrix4f m = camToWorld.matrix().cast<float>();
-/*		glMultMatrixf((GLfloat*)m.data());
-*/
 }
 
 
@@ -205,16 +203,6 @@ void KeyFrameDisplay::drawPC(float pointSize)
 		return;
 
 		Sophus::Matrix4f m = camToWorld.matrix().cast<float>();
-	//	glMultMatrixf((GLfloat*)m.data());
-
-	//	glPointSize(pointSize);
-
-
-	//	glColorPointer(colorBuffer.count_per_element, colorBuffer.datatype, 0, 0);
-	//	glEnableClientState(GL_COLOR_ARRAY);
-
-	//	glVertexPointer(vertexBuffer.count_per_element, vertexBuffer.datatype, 0, 0);
-	//	glDrawArrays(GL_POINTS, 0, numGLBufferGoodPoints);
 }
 
 }

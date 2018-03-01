@@ -79,7 +79,7 @@ public:
 
 	// copies & filters internal data to GL buffer for rendering. if nothing to do: does nothing.
 	bool refreshPC(bool canRefresh, float scaledTH, float absTH, int mode, float minBS, int sparsity);
-
+    void getPts(std::vector<int>& pts);
 	// renders cam & pointcloud.
 	void drawCam(float lineWidth = 1, float* color = 0, float sizeFactor=1);
 	void drawPC(float pointSize);

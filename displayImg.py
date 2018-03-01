@@ -12,17 +12,24 @@ class myreader:
       m.handle = cv2.VideoCapture(f)
       m.idx = -1;
     elif os.path.isdir(f):
-      m.idx = 3001;
+      fs = os.listdir(f)
+      fs.sort()
+      m.idx = int(fs[0][:-4])
+      m.end = int(fs[-1][:-4])
+      m.num_digits = len(fs[0])-4
       m.path = f;
+  def get_img_path(m):
+    d = str(m.idx)
+    d = d.zfill(m.num_digits)
+    return os.path.join(m.path, d+'.jpg')
   def isOpened(m):
     if m.idx == -1: return m.handle.isOpened()
-    p = os.path.join(m.path,str(m.idx)+'.jpg')
+    p = m.get_img_path()
     return os.path.exists(p)
   def read(m):
     if m.idx == -1: return m.handle.read()
-    p = os.path.join(m.path, str(m.idx)+'.jpg')
+    p = m.get_img_path()
     m.idx+=1
-    print(p)
     img = cv2.imread(p)
     return 1,img
   def release(m):
@@ -106,6 +113,12 @@ def find_lane(img, track=None):
         if theta > np.pi*70/180: continue
         print(rho, theta)
         return (rho, theta)
+def find_corners(img):
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    gray = np.float32(gray)
+    dst = cv2.cornerHarris(gray,2,3,0.04)
+    dst = cv2.dilate(dst,None)
+    img[dst>0.01*dst.max()]=[0,0,255]
 
 def find_calib(img):
     h,w,_ = img.shape
@@ -162,6 +175,9 @@ def cnts2mask(mask, cnts):
     for cnt in cnts:
       cv2.fillConvexPoly(mask, cnt, (255,255,255))
     return mask
+def cut_half(img):
+    h,w,_=img.shape
+    img[:h/2,:] = (0,0,0)
 
 import sys
 if len(sys.argv) < 2:
@@ -182,7 +198,9 @@ while(cap.isOpened()):
     frame = down_scale_img(f,640)
     f2 = down_scale_img(frame, 160)
     f3 = down_scale_img(f2, 80)
-    f4 = down_scale_img(f2, 40)
+    f4 = down_scale_img(f2, 20)
+    cut_half(f4)
+    f4 = down_scale_img(f4, 160)
     #dup2 = test_canny(frame)
     img = down_scale_img(f, 640)
     #track_lane = find_lane(f2,track_lane)
@@ -199,6 +217,7 @@ while(cap.isOpened()):
     find_calib(mask)
     mask = cnts2mask(mask,cnts)
     cv2.bitwise_and(frame,mask,frame)
+    find_corners(f2)
 
     overlay_img(frame, f2, 0,0)
     overlay_img(frame, f3, frame.shape[1]-f3.shape[1],0)

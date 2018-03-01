@@ -37,7 +37,6 @@
 #include "util/FrameShell.h"
 
 
-
 namespace dso
 {
 namespace IOWrap
@@ -82,6 +81,14 @@ void KeyFrameDisplay::setFromF(FrameShell* frame, CalibHessian* HCalib)
 	needRefresh=true;
 }
 
+void KeyFrameDisplay::getPts(std::vector<int>& pts) {
+	int npoints = 0;
+    for (int i=0;i<numSparsePoints;i++){
+        if (originalInputSparse[i].status == 3) {
+            pts.push_back(((int)(originalInputSparse[i].u)<<16)+originalInputSparse[i].v);
+        }
+    }
+}
 void KeyFrameDisplay::setFromKF(FrameHessian* fh, CalibHessian* HCalib)
 {
 	setFromF(fh->shell, HCalib);
@@ -372,7 +379,6 @@ void KeyFrameDisplay::drawCam(float lineWidth, float* color, float sizeFactor)
 		glEnd();
 	glPopMatrix();
 }
-
 
 void KeyFrameDisplay::drawPC(float pointSize)
 {

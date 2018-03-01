@@ -261,16 +261,16 @@ void TextDSOViewer::publishKeyframes(
 	boost::unique_lock<boost::mutex> lk(model3DMutex);
 	for(FrameHessian* fh : frames)
 	{
-        printf("%d ", fh->frameID);
 		if(keyframesByKFID.find(fh->frameID) == keyframesByKFID.end())
 		{
+            printf("add %d ", fh->frameID);
 			KeyFrameDisplay* kfd = new KeyFrameDisplay();
 			keyframesByKFID[fh->frameID] = kfd;
 			keyframes.push_back(kfd);
 		}
 		keyframesByKFID[fh->frameID]->setFromKF(fh, HCalib);
 	}
-    printf("key-frame \n");
+    printf("key-frames \n");
 }
 
 void TextDSOViewer::publishCamPose(FrameShell* frame,
