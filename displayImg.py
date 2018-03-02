@@ -1,5 +1,6 @@
 import cv2, numpy as np
 import os
+import enet
 
 GREEN = (0,255,0)
 
@@ -185,11 +186,13 @@ if len(sys.argv) < 2:
 else:
   cap = myreader(sys.argv[1])
 
+net = enet.create_default()
 track_lane = None
 cnt = 1
 _, prev = cap.read()
 fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
 print(prev.shape)
+cmap = enet.predict(net,prev)
 while(cap.isOpened()):
     ret, f = cap.read()
     if f is None : break
@@ -219,7 +222,11 @@ while(cap.isOpened()):
     cv2.bitwise_and(frame,mask,frame)
     find_corners(f2)
 
+    if cnt % 600 == 0:
+      cmap = enet.predict(net,f)
+    cmap = down_scale_img(cmap, 160)
     overlay_img(frame, f2, 0,0)
+    overlay_img(frame, cmap, f2.shape[1],0)
     overlay_img(frame, f3, frame.shape[1]-f3.shape[1],0)
     overlay_img(frame, f4, frame.shape[1]-f4.shape[1]-f3.shape[1],0)
     cv2.imshow('f', frame)
