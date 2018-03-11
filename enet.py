@@ -20,17 +20,17 @@ def predict(net, input_image):
     net.forward_all(**{net.inputs[0]: input_image})
 
     prediction = net.blobs['deconv6_0_0'].data[0].argmax(axis=0)
-    print(prediction.shape)
+    #print(prediction.shape)
     prediction = np.squeeze(prediction)
-    print(prediction.shape)
+    #print(prediction.shape)
     prediction = np.resize(prediction, (3, inshape[2], inshape[3]))
-    print(prediction.shape)
+    #print(prediction.shape)
     prediction = prediction.transpose(1, 2, 0).astype(np.uint8)
-    print(prediction.shape)
+    #print(prediction.shape)
 
     prediction_rgb = np.zeros(prediction.shape, dtype=np.uint8)
     label_colours_bgr = _label_colours[..., ::-1]
-    #print(label_colours.shape, label_colours_bgr.shape)
+    #print(_label_colours.shape, label_colours_bgr.shape)
     cv2.LUT(prediction, label_colours_bgr, prediction_rgb)
     return prediction_rgb
 
@@ -46,19 +46,21 @@ def create_default():
     net = caffe.Net(_model, caffe.TEST, weights=_weights)
     _input_shape = net.blobs['data'].data.shape
     _label_colours = cv2.imread(_colors, 1).astype(np.uint8)
+    #19 classes
+    #for i in xrange(19):
+    #    _label_colours[0][i] = np.zeros(3)
+    #_label_colours[0][0] = np.array([0,255,0]) # road
+    #_label_colours[0][13] = np.array([155,0,0]) # car
     return net
 if __name__ == '__main__':
     net = create_default()
 
-    cnt = 1
-    while cnt < 10000:
-      img = '%s/%05d.jpg' % (sys.argv[1], cnt)
-      print(img)
-      img = cv2.imread(img, 1)
-      prediction_rgb = predict(net, img)
-      cv2.imshow("ENet", prediction_rgb)
-      cnt += 1
-      key = cv2.waitKey(1)
+    img = '../SEQ_0/z0/01801.jpg'
+    print(img)
+    img = cv2.imread(img, 1)
+    prediction_rgb = predict(net, img)
+    cv2.imshow("ENet", prediction_rgb)
+    key = cv2.waitKey(0)
 
 
 

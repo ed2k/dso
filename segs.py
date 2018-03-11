@@ -204,55 +204,18 @@ if len(sys.argv) < 2:
 else:
   cap = myreader(sys.argv[1])
 
-# TODO, move enet to separte process
 net = enet.create_default()
-track_lane = None
 cnt = 1
-_, prev = cap.read()
-fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
-print(prev.shape)
-prev = rotate_img(prev)
-cmap = enet.predict(net,prev)
 while(cap.isOpened()):
     ret, f = cap.read()
     if f is None : break
-    h,w,_ = f.shape
-    f = rotate_img(f)
-    #f = cv2.cvtColor(f, cv2.COLOR_RGB2GRAY)
-    frame = down_scale_img(f,640)
-    f2 = down_scale_img(frame, 160)
-    f3 = down_scale_img(f2, 80)
-    f4 = down_scale_img(f2, 20)
-    cut_half(f4)
-    f4 = down_scale_img(f4, 160)
-    #dup2 = test_canny(frame)
-    img = down_scale_img(f, 640)
-    #track_lane = find_lane(f2,track_lane)
-    find_box(f2,None)
-    if track_lane is not None:
-        print (track_lane)
-        draw_line(f2, track_lane[0],track_lane[1], 250, h*640/w)
-    #f2 = get_fft(f2)
-    cnts = find_box2(frame,get_interests_area(frame))
-    print(len(cnts))
-    find_calib(frame)
-    img = down_scale_img(f,640)
 
-    mask = None
-    h,w,_ = frame.shape
-    mask = cnts2mask(mask,cnts,h,w)
-    cv2.bitwise_and(frame,mask,frame)
-    draw_center_path(frame)
-    find_corners(f2)
-
-    if cnt % 600 == 0:
-      cmap = enet.predict(net,f)
-    cmap = down_scale_img(cmap, 160)
-    overlay_img(frame, f2, 0,0)
-    overlay_img(frame, cmap, f2.shape[1],0)
-    overlay_img(frame, f3, frame.shape[1]-f3.shape[1],0)
-    overlay_img(frame, f4, frame.shape[1]-f4.shape[1]-f3.shape[1],0)
-    cv2.imshow('f', frame)
+    cmap = enet.predict(net,f)
+    p = '../SEQ_0/segs/%05d.png' % cnt
+    if len(sys.argv)>2:
+        p = '%s/%05d.png' % (sys.argv[2], cnt)
+    cv2.imwrite(p, cmap)
+    print(p)
     cnt += 1
     key = cv2.waitKey(1)
 print(cnt)
