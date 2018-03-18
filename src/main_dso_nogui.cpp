@@ -476,7 +476,7 @@ int main( int argc, char** argv )
 			} else {
 					img = reader->getImage(i);
 			}
-
+            
 
             bool skipFrame=false;
             if(playbackSpeed!=0)
@@ -493,10 +493,14 @@ int main( int argc, char** argv )
                 }
               }
 			}
+            
+			if (img) {
+              if(!skipFrame) fullSystem->addActiveFrame(img, i);
 
-            if(!skipFrame) fullSystem->addActiveFrame(img, i);
-
-            delete img;
+              delete img;
+			} else {
+				break;
+			}
 
             if(fullSystem->initFailed || setting_fullResetRequested)
             {
@@ -533,23 +537,6 @@ int main( int argc, char** argv )
         fullSystem->printResult("result.txt");
         viewer->printPC();
 
-        int numFramesProcessed = abs(idsToPlay[0]-idsToPlay.back());
-        double numSecondsProcessed = fabs(reader->getTimestamp(idsToPlay[0])-reader->getTimestamp(idsToPlay.back()));
-        double MilliSecondsTakenSingle = 1000.0f*(ended-started)/(float)(CLOCKS_PER_SEC);
-        double MilliSecondsTakenMT = sInitializerOffset + ((tv_end.tv_sec-tv_start.tv_sec)*1000.0f + (tv_end.tv_usec-tv_start.tv_usec)/1000.0f);
-        printf("\n======================"
-                "\n%d Frames (%.1f fps)"
-                "\n%.2fms per frame (single core); "
-                "\n%.2fms per frame (multi core); "
-                "\n%.3fx (single core); "
-                "\n%.3fx (multi core); "
-                "\n======================\n\n",
-                numFramesProcessed, numFramesProcessed/numSecondsProcessed,
-                MilliSecondsTakenSingle/numFramesProcessed,
-                MilliSecondsTakenMT / (float)numFramesProcessed,
-                1000 / (MilliSecondsTakenSingle/numSecondsProcessed),
-                1000 / (MilliSecondsTakenMT / numSecondsProcessed));
-        //fullSystem->printFrameLifetimes();
         if(setting_logStuff)
         {
             std::ofstream tmlog;

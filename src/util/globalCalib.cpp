@@ -47,7 +47,7 @@ namespace dso
 		int wlvl=w;
 		int hlvl=h;
 		pyrLevelsUsed=1;
-		while(wlvl%2==0 && hlvl%2==0 && wlvl*hlvl > 784 && pyrLevelsUsed < PYR_LEVELS)
+		while(wlvl%2==0 && hlvl%2==0 && wlvl*hlvl > 784 && pyrLevelsUsed < 5)
 		{
 			wlvl /=2;
 			hlvl /=2;

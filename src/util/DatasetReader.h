@@ -289,6 +289,7 @@ private:
 	ImageAndExposure* getImage_internal(int id, int unused)
 	{
 		MinimalImageB* minimg = getImageRaw_internal(id, 0);
+		if(!minimg) return NULL;
 		ImageAndExposure* ret2 = undistort->undistort<unsigned char>(
 				minimg,
 				(exposures.size() == 0 ? 1.0f : exposures[id]),
