@@ -10,6 +10,9 @@ sys.path.insert(0, caffe_root + 'python')
 import caffe
 import cv2
 
+def get_offline_result(idx):
+    fname = '../SEQ_0/segs/%05d.png' % idx
+    return cv2.imread(fname, 1)
 def predict(net, input_image):
     input_image = input_image.astype(np.float32)
     inshape = _input_shape

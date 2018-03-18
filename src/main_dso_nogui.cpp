@@ -45,11 +45,11 @@
 #include "OptimizationBackend/MatrixAccumulators.h"
 #include "FullSystem/PixelSelector2.h"
 
-
-
 #include "IOWrapper/nogui/TextDSOViewer.h"
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
 
+#include "opencv2/opencv.hpp"
+using namespace cv;
 
 std::string vignette = "";
 std::string gammaCalib = "";
@@ -141,7 +141,6 @@ void settingsDefault(int preset)
 
 	printf("==============================================\n");
 }
-
 
 void parseArgument(char* arg)
 {
@@ -339,6 +338,34 @@ void parseArgument(char* arg)
 	printf("could not parse argument \"%s\"!!!!\n", arg);
 }
 
+using namespace cv;
+static void video_loop(){
+	VideoCapture cap(source);
+  while(1){
+	Mat frame;
+	// Capture frame-by-frame
+    cap >> frame;
+  
+    // If the frame is empty, break immediately
+    if (frame.empty())
+      break;
+    std::cout<<frame.rows<<" x "<<frame.cols<<std::endl;
+	frame = frame(Range(frame.rows-1024,frame.rows),Range::all());
+    std::cout<<frame.rows<<" "<<frame.cols<<std::endl;
+	resize(frame,frame,Size(640,frame.rows*640/frame.cols));
+	cvtColor(frame,frame,COLOR_RGB2GRAY);
+    // Display the resulting frame
+    imshow( "Frame", frame );
+
+    // Press  ESC on keyboard to exit
+    char c=(char)waitKey(25);
+    if(c==27)
+      break;
+  }
+	cap.release();
+	destroyAllWindows();
+}
+
 int main( int argc, char** argv )
 {
 	for(int i=1; i<argc;i++)
@@ -346,8 +373,12 @@ int main( int argc, char** argv )
 
 	// hook crtl+C.
 	boost::thread exThread = boost::thread(exitThread);
-
-	ImageFolderReader* reader = new ImageFolderReader(source,calib, gammaCalib, vignette);
+    bool isMov = (source.length()>4 && source.substr(source.length()-4) == ".mp4");
+	if (isMov){
+		//video_loop();
+		//return 0;
+	}
+    ImageFolderReader* reader = new ImageFolderReader(source,calib, gammaCalib, vignette);
 	reader->setGlobalCalibration();
 
 	if(setting_photometricCalibration > 0 && reader->getPhotometricGamma() == 0)
@@ -387,25 +418,25 @@ int main( int argc, char** argv )
     std::thread runthread([&]() {
         std::vector<int> idsToPlay;
         std::vector<double> timesToPlayAt;
-        for(int i=lstart;i>= 0 && i< reader->getNumImages() && linc*i < linc*lend;i+=linc)
-        {
-            idsToPlay.push_back(i);
-            if(timesToPlayAt.size() == 0)
-            {
-                timesToPlayAt.push_back((double)0);
-            }
-            else
-            {
-                double tsThis = reader->getTimestamp(idsToPlay[idsToPlay.size()-1]);
-                double tsPrev = reader->getTimestamp(idsToPlay[idsToPlay.size()-2]);
-                timesToPlayAt.push_back(timesToPlayAt.back() +  fabs(tsThis-tsPrev)/playbackSpeed);
-            }
-        }
-
 
         std::vector<ImageAndExposure*> preloadedImages;
         if(preload)
         {
+			for(int i=lstart;i>= 0 && i< reader->getNumImages() && linc*i < linc*lend;i+=linc)
+			{
+				idsToPlay.push_back(i);
+				if(timesToPlayAt.size() == 0)
+				{
+					timesToPlayAt.push_back((double)0);
+				}
+				else
+				{
+					double tsThis = reader->getTimestamp(idsToPlay[idsToPlay.size()-1]);
+					double tsPrev = reader->getTimestamp(idsToPlay[idsToPlay.size()-2]);
+					timesToPlayAt.push_back(timesToPlayAt.back() +  fabs(tsThis-tsPrev)/playbackSpeed);
+				}
+			}
+
             printf("LOADING ALL IMAGES!\n");
             for(int ii=0;ii<(int)idsToPlay.size(); ii++)
             {
@@ -414,29 +445,37 @@ int main( int argc, char** argv )
             }
         }
 
+
         struct timeval tv_start;
         gettimeofday(&tv_start, NULL);
         clock_t started = clock();
         double sInitializerOffset=0;
 
 
-        for(int ii=0;ii<(int)idsToPlay.size(); ii++)
+        for(int ii=0;; ii++)
         {
             if(!fullSystem->initialized)	// if not initialized: reset start time.
             {
                 gettimeofday(&tv_start, NULL);
                 started = clock();
-                sInitializerOffset = timesToPlayAt[ii];
+                if(timesToPlayAt.size()>0) {
+					sInitializerOffset = timesToPlayAt[ii];
+				}
             }
 
-            int i = idsToPlay[ii];
-
+            int i = ii;
+			if (idsToPlay.size()>0)i = idsToPlay[ii];
 
             ImageAndExposure* img;
-            if(preload)
-                img = preloadedImages[ii];
-            else
-                img = reader->getImage(i);
+			if (idsToPlay.size()>0){
+				if(ii<(int)idsToPlay.size())break;
+				if(preload)
+					img = preloadedImages[ii];
+				else
+					img = reader->getImage(i);
+			} else {
+					img = reader->getImage(i);
+			}
 
 
             bool skipFrame=false;
@@ -444,7 +483,7 @@ int main( int argc, char** argv )
             {
                 struct timeval tv_now; gettimeofday(&tv_now, NULL);
                 double sSinceStart = sInitializerOffset + ((tv_now.tv_sec-tv_start.tv_sec) + (tv_now.tv_usec-tv_start.tv_usec)/(1000.0f*1000.0f));
-
+              if(timesToPlayAt.size()>0){
                 if(sSinceStart < timesToPlayAt[ii])
                     usleep((int)((timesToPlayAt[ii]-sSinceStart)*1000*1000));
                 else if(sSinceStart > timesToPlayAt[ii]+0.5+0.1*(ii%2))
@@ -452,7 +491,8 @@ int main( int argc, char** argv )
                     printf("SKIPFRAME %d (play at %f, now it is %f)!\n", ii, timesToPlayAt[ii], sSinceStart);
                     skipFrame=true;
                 }
-            }
+              }
+			}
 
             if(!skipFrame) fullSystem->addActiveFrame(img, i);
 

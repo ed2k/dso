@@ -1,6 +1,6 @@
 /**
 * This file is part of DSO.
-* 
+*
 * Copyright 2016 Technical University of Munich and Intel.
 * Developed by Jakob Engel <engelj at in dot tum dot de>,
 * for more information see <http://vision.in.tum.de/dso>.
@@ -40,10 +40,9 @@
 #endif
 
 #include <boost/thread.hpp>
+#include "opencv2/opencv.hpp"
 
 using namespace dso;
-
-
 
 inline int getdir (std::string dir, std::vector<std::string> &files)
 {
@@ -104,6 +103,7 @@ class ImageFolderReader
 public:
 	ImageFolderReader(std::string path, std::string calibFile, std::string gammaFile, std::string vignetteFile)
 	{
+		m_cap = NULL;
 		this->path = path;
 		this->calibfile = calibFile;
 
@@ -113,10 +113,7 @@ public:
 #endif
 
 		isZipped = (path.length()>4 && path.substr(path.length()-4) == ".zip");
-
-
-
-
+		isMov = (path.length()>4 && path.substr(path.length()-4) == ".mp4");
 
 		if(isZipped)
 		{
@@ -145,11 +142,11 @@ public:
 			printf("ERROR: cannot read .zip archive, as compile without ziplib!\n");
 			exit(1);
 #endif
-		}
-		else
+        } else if (isMov) {
+            m_cap = new cv::VideoCapture(path);
+        } else {
 			getdir (path, files);
-
-
+		}
 		undistort = Undistort::getUndistorterForFile(calibFile, gammaFile, vignetteFile);
 
 
@@ -246,6 +243,15 @@ private:
 	{
 		if(!isZipped)
 		{
+			if (m_cap) {
+				cv::Mat f;
+				(*m_cap)>>f;
+				assert(!f.empty());
+				//f = f(cv::Range(f.rows-1024,f.rows),cv::Range::all());
+				cv::cvtColor(f,f,cv::COLOR_RGB2GRAY);
+				MinimalImageB* m = new MinimalImageB((int)f.cols, (int)f.rows,(unsigned char*)f.data);
+				return m;
+			}
 			// CHANGE FOR ZIP FILE
 			return IOWrap::readImageBW_8U(files[id]);
 		}
@@ -293,6 +299,7 @@ private:
 
 	inline void loadTimestamps()
 	{
+		if (m_cap) return;
 		std::ifstream tr;
 		std::string timesFile = path.substr(0,path.find_last_of('/')) + "/times.txt";
 		tr.open(timesFile.c_str());
@@ -355,9 +362,6 @@ private:
 		printf("got %d images and %d timestamps and %d exposures.!\n", (int)getNumImages(), (int)timestamps.size(), (int)exposures.size());
 	}
 
-
-
-
 	std::vector<ImageAndExposure*> preloadedImages;
 	std::vector<std::string> files;
 	std::vector<double> timestamps;
@@ -370,6 +374,8 @@ private:
 	std::string calibfile;
 
 	bool isZipped;
+	bool isMov;
+    cv::VideoCapture* m_cap;
 
 #if HAS_ZIPLIB
 	zip_t* ziparchive;

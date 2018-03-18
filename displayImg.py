@@ -205,14 +205,13 @@ else:
   cap = myreader(sys.argv[1])
 
 # TODO, move enet to separte process
-net = enet.create_default()
+#net = enet.create_default()
 track_lane = None
 cnt = 1
 _, prev = cap.read()
 fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
 print(prev.shape)
 prev = rotate_img(prev)
-cmap = enet.predict(net,prev)
 while(cap.isOpened()):
     ret, f = cap.read()
     if f is None : break
@@ -230,11 +229,11 @@ while(cap.isOpened()):
     #track_lane = find_lane(f2,track_lane)
     find_box(f2,None)
     if track_lane is not None:
-        print (track_lane)
+        #print (track_lane)
         draw_line(f2, track_lane[0],track_lane[1], 250, h*640/w)
     #f2 = get_fft(f2)
     cnts = find_box2(frame,get_interests_area(frame))
-    print(len(cnts))
+    #print(len(cnts))
     find_calib(frame)
     img = down_scale_img(f,640)
 
@@ -245,8 +244,8 @@ while(cap.isOpened()):
     draw_center_path(frame)
     find_corners(f2)
 
-    if cnt % 600 == 0:
-      cmap = enet.predict(net,f)
+    #cmap = enet.predict(net,f)
+    cmap = enet.get_offline_result(cnt)
     cmap = down_scale_img(cmap, 160)
     overlay_img(frame, f2, 0,0)
     overlay_img(frame, cmap, f2.shape[1],0)
