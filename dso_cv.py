@@ -14,6 +14,7 @@ def draw(img, pts):
 
 #axis = np.float32([[3,0,0], [0,3,0], [0,0,-3]]).reshape(-1,3)
 
+# 0 creative, 2 small logitech 
 cap = cv2.VideoCapture(0)
 
 t1 = 15

@@ -1,7 +1,7 @@
 SET(PROJECT_NAME DSO)
 
 PROJECT(${PROJECT_NAME})
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.6)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
@@ -13,6 +13,8 @@ set(LIBRARY_OUTPUT_PATH lib)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # required libraries
+#set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 find_package(SuiteParse REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Boost COMPONENTS system thread) 
@@ -127,7 +129,7 @@ else()
 endif()
 
 add_executable(dso_nogui ${PROJECT_SOURCE_DIR}/src/main_dso_nogui.cpp ${dso_nogui_SOURCE_FILES})
-target_link_libraries(dso_nogui pthread dso boost_system boost_thread cxsparse ${LIBZIP_LIBRARY} ${OpenCV_LIBS} ${nogui_LIBRARIES})
+target_link_libraries(dso_nogui dso pthread boost_system boost_thread cxsparse ${LIBZIP_LIBRARY} ${OpenCV_LIBS} ${nogui_LIBRARIES})
 
 
 
